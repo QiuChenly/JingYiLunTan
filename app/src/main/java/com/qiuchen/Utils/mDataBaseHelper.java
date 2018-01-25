@@ -7,18 +7,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.qiuchen.DataModel.mTask;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by qiuchen on 2018/1/2.
  */
 
 public class mDataBaseHelper extends SQLiteOpenHelper {
+
     public mDataBaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
@@ -67,6 +63,4 @@ public class mDataBaseHelper extends SQLiteOpenHelper {
         }
         return mUtils.Companion.orders(mList);
     }
-
-
 }

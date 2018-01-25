@@ -1,21 +1,28 @@
 package com.qiuchen.API
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Environment
 import com.google.gson.Gson
+import com.qiuchen.DataModel.mLoginState
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.DataModel.mTaskList
 import com.qiuchen.R
-import com.qiuchen.httpClient.httpClient
+import com.qiuchen.jingyi.nativeHttp.nHttp
+import com.qiuchen.mSharedContext
+import java.io.File
+import java.io.FileOutputStream
 import java.util.regex.Pattern
-import kotlin.concurrent.thread
 
 /**
  * Created by qiuchen on 2018/1/1.
  */
 class mJingYi {
     companion object {
+        val TAG = "QiuChen"
         val TASK_REGEX = "<tr><td><a href=\"(.*?)\" title=\"(.*?)\" target=\"_blank\">(.*?)</a></td><td><font color=#.*?><b>(.*?)</b></font></td><td>(.*?)</td><td><span title=\"(.*?)\">(.*?)</span></td><td></td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></td></tr>"
         val MAIN_URL = "https://bbs.125.la/"
-        val GET_TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
+        val _TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
         val getTitle = arrayOf("论坛接单", "随机精华", "最新求助")
         val getImage = arrayOf(
                 R.drawable.ic_monetization_on_black_24dp,
@@ -26,19 +33,22 @@ class mJingYi {
         fun getTaskList(t: TaskCallBack) {
             Thread {
                 kotlin.run {
-                    val response = httpClient.Request(GET_TASK_LIST + System.currentTimeMillis(), 0, null, httpClient.cookies, "Accept:*/*\n" +
-                            "Accept-Language:zh-CN,zh;q=0.9,en;q=0.8\n" +
-                            "Connection:keep-alive\n" +
-                            "Host:bbs.125.la\n" +
-                            "Referer:https://bbs.125.la/e3600-task.html\n" +
-                            "User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36\n" +
-                            "X-Requested-With:XMLHttpRequest", 10000, 10000, true)
+                    val http = nHttp.Builder(_TASK_LIST + System.currentTimeMillis())
+                            .setCookieStore(mSharedContext.getCookie())
+                            .setRequestHeader("Accept", "*/*")
+                            .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                            .setRequestHeader("Connection", "keep-alive")
+                            .setRequestHeader("Host", "bbs.125.la")
+                            .setRequestHeader("Referer", "https://bbs.125.la/e3600-task.html")
+                            .setRequestHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36")
+                            .setRequestHeader("X-Requested-With", "XMLHttpRequest")
+                            .Request()
                     t.taskOver()
-                    if (response == null) {
+                    if (http.getStatusCode() != 200) {
                         t.taskGetFailed()
                         return@Thread
                     }
-                    val a = httpClient.DecodeByteToString(response.responseByte, "gbk")
+                    val a = http.toString()
                     val d = Gson().fromJson(a, mTaskList::class.java)
                     val b = Pattern.compile(TASK_REGEX)
                     val c = b.matcher(d.data)
@@ -61,6 +71,157 @@ class mJingYi {
                 }
             }.start()
         }
+
+        //2018.1.24 开始全线使用nativeHttp
+        private var QRLOGIN_INITURL = "https://bbs.125.la/plugin.php?id=we_weixin&mod=login"
+
+        //获取二维码
+        fun initScanQR(cb: QRCallBack) {
+            val http = nHttp.Builder(QRLOGIN_INITURL)
+                    .setCookieStore(mSharedContext.getCookie())
+                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .setRequestHeader("Cache-Control", "no-cache")
+                    .setRequestHeader("Connection", "keep-alive")
+                    .setRequestHeader("Host", "bbs.125.la")
+                    .setRequestHeader("Pragma", "no-cache")
+                    .setRequestHeader("Referer", "https://bbs.125.la/")
+                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
+                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                    .Request()
+            if (http.getStatusCode() != 200) {
+                cb.getImgSuccess(-1, null)
+                return
+            }
+            var Str = http.toString()
+            Str = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + getSubString(Str, "https://mp\\.weixin\\.qq\\.com/cgi-bin/showqrcode\\?ticket=(.*?)\" width=\"250\"")
+            cb.getImgSuccess(0, readImg(Str, 0))
+        }
+
+        private fun readImg(str: String, mode: Int): Bitmap? {
+            val http = nHttp.Builder(str)
+                    .setCookieStore(mSharedContext.getCookie())
+                    .setRequestHeader("Accept", "image/webp,image/apng,image/*,*/*;q=0.8")
+                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .setRequestHeader("Cache-Control", "no-cache")
+                    .setRequestHeader("Connection", "keep-alive")
+                    .setRequestHeader("Host", "mp.weixin.qq.com")
+                    .setRequestHeader("Pragma", "no-cache")
+                    .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
+                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+            if (mode == 1) {
+                http.setRequestHeader("Host", "bbs.125.la")
+                        .setRequestHeader("Referer", "https://bbs.125.la/")
+            }
+            val mHttpRet = http.Request()
+            if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+                val file = File(Environment.getExternalStorageDirectory(), "scan.jpg")
+                val fos = FileOutputStream(file)
+                fos.write(mHttpRet.getBytes())
+                fos.flush()
+                fos.close()
+            }
+            return mHttpRet.toImage()
+        }
+
+        //0 = No
+        //1 = OK
+        fun getQRStatus(): Int {
+            var str = "https://bbs.125.la/plugin.php?id=we_weixin&mod=login&ac=refurbish&d=&s=" + System.currentTimeMillis()
+            val http = nHttp.Builder(str)
+                    .setCookieStore(mSharedContext.getCookie())
+                    .setRequestHeader("Accept", "*/*")
+                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .setRequestHeader("Cache-Control", "no-cache")
+                    .setRequestHeader("Connection", "keep-alive")
+                    .setRequestHeader("Host", "bbs.125.la")
+                    .setRequestHeader("Pragma", "no-cache")
+                    .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
+                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                    .setRequestHeader("X-Requested-With", "XMLHttpRequest")
+                    .Request()
+            //{"status":"0","data":""}
+            str = http.toString()
+            val state = Gson().fromJson(str, QRBack::class.java)
+            return state.status?.toInt()!!
+        }
+
+        fun ScanSuccess() {
+            var str = "https://bbs.125.la/plugin.php?id=we_weixin&mod=login&ac=success&d="
+            var http = nHttp.Builder(str)
+                    .setCookieStore(mSharedContext.getCookie())
+                    .setAllowRedirect(true)
+                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .setRequestHeader("Cache-Control", "no-cache")
+                    .setRequestHeader("Connection", "keep-alive")
+                    .setRequestHeader("Host", "bbs.125.la")
+                    .setRequestHeader("Pragma", "no-cache")
+                    .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
+                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
+                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                    .Request()
+            getMainIndex()
+        }
+
+        fun getMainIndex() {
+            var str = "https://bbs.125.la/"
+            val http = nHttp.Builder(str)
+                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .setRequestHeader("Cache-Control", "no-cache")
+                    .setRequestHeader("Connection", "keep-alive")
+                    .setRequestHeader("Host", "bbs.125.la")
+                    .setRequestHeader("Pragma", "no-cache")
+                    .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
+                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
+                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                    .setCookieStore(mSharedContext.getCookie())
+                    .Request()
+            str = http.toString()
+            var p = Pattern.compile("<strong class=\"vwmy qq\"><a href=\"\\./home\\.php\\?mod=space&amp;uid=(.*?)\" target=\"_blank\" title=\"访问我的空间\">(.*?)</a></strong>")
+            var m = p.matcher(str)
+            if (m.find()) {
+                val nick = m.group(2)
+                val uid = m.group(1)
+                p = Pattern.compile("<div class=\"avt y\"><a href=\"\\./home\\.php\\?mod=space&amp;uid=.*?\"><img src=\"(.*?)\"")
+                m = p.matcher(str)
+                m.find()
+                val bit = readImg(m.group(1).replace(":443", ""), 1)
+                mSharedContext.mLoginState.isLogin = true
+                mSharedContext.mLoginState.nickName = nick
+                mSharedContext.mLoginState.uid = uid
+                mSharedContext.mLoginState.pic = bit
+            } else {
+                mSharedContext.mLoginState.isLogin = false
+            }
+        }
+
+        class QRBack {
+            /**
+             * status : 1
+             * data :
+             */
+            var status: String? = null
+            var data: String? = null
+        }
+
+        interface QRCallBack {
+            fun getImgSuccess(status: Int, bit: Bitmap?)
+        }
+
+        /**
+         * 正则表达式取中间文本
+         */
+        private fun getSubString(all: String, Regexs: String): String {
+            val p = Pattern.compile(Regexs)
+            val m = p.matcher(all)
+            //m.group(0) 代表匹配到的整条数据
+            if (m.find()) {
+                return m.group(1)
+            }
+            return ""
+        }
     }
 
     interface TaskCallBack {
@@ -68,6 +229,8 @@ class mJingYi {
         fun taskGetFailed()
         fun taskOver()
     }
+
+    val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"
 }
 
 

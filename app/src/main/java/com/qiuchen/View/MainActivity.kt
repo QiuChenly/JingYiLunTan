@@ -1,11 +1,17 @@
 package com.qiuchen.View
 
+import android.annotation.TargetApi
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Rect
+import android.os.Build
+import android.os.Environment
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils.isEmpty
 import android.view.Gravity
 import android.view.View
 import com.qiuchen.API.mJingYi
@@ -14,14 +20,48 @@ import com.qiuchen.Adapter.navigationBarList
 import com.qiuchen.Base.BaseApp
 import com.qiuchen.Base.mLayoutSet
 import com.qiuchen.DataModel.mTask
+import com.qiuchen.Presenter.mPresenter
 import com.qiuchen.R
 import com.qiuchen.Utils.mUtils
+import com.qiuchen.mSharedContext
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigation_head.*
+import java.io.File
+import java.io.FileOutputStream
+import java.security.Permission
+import java.security.PermissionCollection
+import java.security.Permissions
 import java.util.HashMap
+import java.util.jar.Manifest
 import kotlin.collections.ArrayList
 
-class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content.ViewEvent, mJingYi.TaskCallBack, iGetMoreData, ViewPager.OnPageChangeListener {
+class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content.ViewEvent, mJingYi.TaskCallBack, iGetMoreData, ViewPager.OnPageChangeListener, mJingYi.Companion.QRCallBack {
+
+    override fun getImgSuccess(status: Int, bit: Bitmap?) {
+        runOnUiThread {
+            var str = ""
+            when (status) {
+                0 -> {
+                    str = "二维码已刷新！"
+                    mUserPic.setImageBitmap(bit)
+                }
+                -1 ->
+                    str = "二维码获取失败！请检查网络环境！"
+                3 ->
+                    str = "刷新了二维码！"
+                1 -> {
+                    mUserNick.text = mSharedContext.mLoginState.nickName + " Uid:" + mSharedContext.mLoginState.uid
+                    mUserNick.textSize = 15f
+                    mUserPic.setImageBitmap(mSharedContext.mLoginState.pic)
+                    str = "欢迎你,开发者 " + mSharedContext.mLoginState.nickName
+                    mBottomControlBar.visibility = View.VISIBLE
+                }
+            }
+            Snackbar.make(window.decorView, str, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+
     override fun onPageScrollStateChanged(state: Int) {
 
     }
@@ -99,12 +139,11 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         val adapterData = ArrayList<Map<Int, String>>()
         for ((a, str) in mJingYi.getTitle.withIndex()) {
             val map = HashMap<Int, String>()
-            map.put(mJingYi.getImage[a], str)
+            map[mJingYi.getImage[a]] = str
             adapterData.add(map)
         }
         mUtils.size = mJingYi.getTitle.size
         mNavigationList.adapter = navigationBarList(adapterData, this)
-
 
         //初始化桌面
         mViews = arrayListOf(
@@ -119,7 +158,14 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         //SomeClickCallback
         mNavigationExitUser.setOnClickListener(this)
         mToolBarMenu.setOnClickListener(this)
+        mUserPic.setOnClickListener(this)
         mContentTitle.text = "论坛接单"
+
+        if (mSharedContext.getCookie().toString().isEmpty()) {
+            mPresenter.getQR(this)
+        } else {
+            mPresenter.autoLogin(this)
+        }
     }
 
     override fun getSet(mSet: mLayoutSet): mLayoutSet {
@@ -133,11 +179,18 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
     override fun onClick(p0: View) {
         when (p0.id) {
             mNavigationExitUser.id -> {
-                mUserPic.setImageResource(R.drawable.ic_menu_black_24dp)
                 onExitUser()
             }
             mToolBarMenu.id -> {
                 drawer_layout.openDrawer(Gravity.START)
+            }
+            mUserPic.id -> {
+                if (appInstalled("com.tencent.mm")) {
+                    startWeiXin()
+                }else{
+                    Snackbar.make(window.decorView, "您还没有安装微信!", Snackbar.LENGTH_SHORT)
+                            .show()
+                }
             }
         }
     }
@@ -154,6 +207,10 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
      * 用户退出登录
      */
     fun onExitUser() {
-
+        mSharedContext.getCookie().initStatus() //清空Cookie
+        //调用加载二维码方法
+        mPresenter.getQR(this)
+        mUserNick.text = "QiuChenly - 扫码登录精易"
+        mBottomControlBar.visibility = View.GONE
     }
 }

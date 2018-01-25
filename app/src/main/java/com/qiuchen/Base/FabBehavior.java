@@ -103,5 +103,4 @@ public class FabBehavior extends CoordinatorLayout.Behavior {
         });
         animator.start();
     }
-
 }

@@ -10,15 +10,16 @@ import android.view.ViewGroup
  */
 class ViewPager_Content(var mList: List<View>,
                         var mViewEvent: ViewEvent) : PagerAdapter() {
-    override fun isViewFromObject(view: View?, `object`: Any?): Boolean {
+    override fun isViewFromObject(view: View, `object`: Any): Boolean {
         return view == `object`
+
     }
 
     override fun getCount(): Int {
         return mList.size
     }
 
-    override fun getItemPosition(`object`: Any?): Int {
+    override fun getItemPosition(`object`: Any): Int {
         return super.getItemPosition(`object`)
     }
 

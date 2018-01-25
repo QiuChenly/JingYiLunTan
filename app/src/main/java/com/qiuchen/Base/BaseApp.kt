@@ -1,5 +1,6 @@
 package com.qiuchen.Base
 
+import android.content.ComponentName
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -23,11 +24,24 @@ abstract class BaseApp : AppCompatActivity(), View.OnClickListener {
         if (mSet.TranslateBar) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }
-        InitOver()
+        //针对Android M+系统做适配
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(getPermission(), 0)
+        } else {
+            InitOver()
+        }
     }
 
     abstract fun InitOver()
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        InitOver()
+    }
+
+    fun getPermission(): Array<String> {
+        return arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS,
+                android.Manifest.permission.INTERNET)
+    }
 
     /**
      * 获取基本布局设置
@@ -60,6 +74,27 @@ abstract class BaseApp : AppCompatActivity(), View.OnClickListener {
             System.exit(0)
         }
         super.onBackPressed()
+    }
+
+    fun appInstalled(str: String): Boolean {
+        packageManager.getInstalledPackages(0)
+                .forEach {
+                    val pi = it
+                    if (pi.packageName == str) {
+                        return true
+                    }
+                }
+        return false
+    }
+
+    fun startWeiXin(){
+        val c = ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI")
+        val i = Intent()
+        i.component=c
+        i.action = Intent.ACTION_MAIN
+        i.addCategory(Intent.CATEGORY_LAUNCHER)
+        i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        startActivity(i)
     }
 
     fun <T> go(cls: Class<T>) {
