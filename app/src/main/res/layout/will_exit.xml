@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:id="@+id/bottomSheet_willExit_title"
+        android:gravity="center"
+        android:text="住手!诸葛村妇...你敢?!"
+        android:textColor="@color/cardview_dark_background"
+        android:textSize="16sp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/cardview_dark_background"/>
+
+    <TextView
+        android:id="@+id/bottomSheet_willExit_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:textSize="18sp"
+        android:text="我有一言,请诸位静听.如果退出,您将失去叱咤风云 快意恩仇的易语言江湖地位!复兴易语言的大业,将遥遥无期!值此业界大难之时,XXX你又有何作为?" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:text="我们不一样~" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/cardview_dark_background"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/bottomSheet_willExit_keep"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/select_item_back"
+            android:text="社稷累卵之危,暂且留下" />
+
+        <Button
+            android:layout_width="0dp"
+            android:id="@+id/bottomSheet_willExit_exits"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/select_item_back"
+            android:text="我意已决!休要再劝!" />
+    </LinearLayout>
+</LinearLayout>

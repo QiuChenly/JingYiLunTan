@@ -23,6 +23,7 @@ class mJingYi {
         val TASK_REGEX = "<tr><td><a href=\"(.*?)\" title=\"(.*?)\" target=\"_blank\">(.*?)</a></td><td><font color=#.*?><b>(.*?)</b></font></td><td>(.*?)</td><td><span title=\"(.*?)\">(.*?)</span></td><td></td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></td></tr>"
         val MAIN_URL = "https://bbs.125.la/"
         val _TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
+        val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"
         val getTitle = arrayOf("论坛接单", "随机精华", "最新求助")
         val getImage = arrayOf(
                 R.drawable.ic_monetization_on_black_24dp,
@@ -115,7 +116,9 @@ class mJingYi {
             }
             val mHttpRet = http.Request()
             if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-                val file = File(Environment.getExternalStorageDirectory(), "scan.jpg")
+                val file = File(Environment.getExternalStorageDirectory(), "scan.png")
+                if (file.exists())
+                    file.delete()
                 val fos = FileOutputStream(file)
                 fos.write(mHttpRet.getBytes())
                 fos.flush()
@@ -150,7 +153,6 @@ class mJingYi {
             var str = "https://bbs.125.la/plugin.php?id=we_weixin&mod=login&ac=success&d="
             var http = nHttp.Builder(str)
                     .setCookieStore(mSharedContext.getCookie())
-                    .setAllowRedirect(true)
                     .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
                     .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
                     .setRequestHeader("Cache-Control", "no-cache")
@@ -161,7 +163,8 @@ class mJingYi {
                     .setRequestHeader("Upgrade-Insecure-Requests", "1")
                     .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
                     .Request()
-            getMainIndex()
+            if (http.getStatusCode() == 302)
+                getMainIndex()
         }
 
         fun getMainIndex() {
@@ -184,10 +187,13 @@ class mJingYi {
             if (m.find()) {
                 val nick = m.group(2)
                 val uid = m.group(1)
-                p = Pattern.compile("<div class=\"avt y\"><a href=\"\\./home\\.php\\?mod=space&amp;uid=.*?\"><img src=\"(.*?)\"")
+                p = Pattern.compile("mod=space&amp;uid=260102\"><img src=\"(.*?)\" onerror")
                 m = p.matcher(str)
                 m.find()
-                val bit = readImg(m.group(1).replace(":443", ""), 1)
+                var imageUrl = m.group(1)
+                if (imageUrl.isEmpty())
+                    imageUrl = DEFAULT_PIC
+                val bit = readImg(imageUrl.replace(":443", ""), 1)
                 mSharedContext.mLoginState.isLogin = true
                 mSharedContext.mLoginState.nickName = nick
                 mSharedContext.mLoginState.uid = uid
@@ -230,7 +236,6 @@ class mJingYi {
         fun taskOver()
     }
 
-    val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"
 }
 
 

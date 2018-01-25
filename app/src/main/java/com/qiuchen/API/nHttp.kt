@@ -241,7 +241,7 @@ open class nHttp(ret: nHttpRet) {
             allCook.split(";").forEach {
                 val s = it.split("=")
                 if (s.size > 1)
-                    mHash.put(s[0], s[1])
+                    mHash[s[0]] = s[1]
             }
         }
 
@@ -250,12 +250,12 @@ open class nHttp(ret: nHttpRet) {
          */
         fun addAll(allCook: ArrayList<nHttp.CookieEx>?) {
             allCook?.forEach {
-                mHash.put(it.key, it.value)
+                mHash[it.key] = it.value
             }
         }
 
         fun add(key: String, value: String) {
-            mHash.put(key, value)
+            mHash[key] = value
         }
 
         override fun toString(): String {

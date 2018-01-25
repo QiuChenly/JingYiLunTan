@@ -39,6 +39,11 @@ class mSharedContext : Application() {
             return mSP
         }
 
+        fun saveCookie() {
+            mSP.edit().putString("Cookie", CookieEx.toString())
+                    .apply()
+        }
+
         fun getContext(): Context {
             return this.mContext
         }

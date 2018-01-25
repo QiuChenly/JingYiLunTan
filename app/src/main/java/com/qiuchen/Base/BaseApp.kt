@@ -2,19 +2,22 @@ package com.qiuchen.Base
 
 import android.content.ComponentName
 import android.content.Intent
-import android.graphics.Color
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.support.annotation.RequiresApi
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.view.WindowManager
+import android.widget.Toast
 
 /**
  * Created by qiuchen on 2017/12/31.
  */
 abstract class BaseApp : AppCompatActivity(), View.OnClickListener {
+
     lateinit var mSet: mLayoutSet
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,13 +90,13 @@ abstract class BaseApp : AppCompatActivity(), View.OnClickListener {
         return false
     }
 
-    fun startWeiXin(){
-        val c = ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI")
+    fun startWeiXin() {
+        val c = ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
         val i = Intent()
-        i.component=c
+        i.component = c
         i.action = Intent.ACTION_MAIN
         i.addCategory(Intent.CATEGORY_LAUNCHER)
-        i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(i)
     }
 

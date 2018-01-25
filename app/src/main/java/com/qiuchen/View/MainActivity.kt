@@ -1,19 +1,24 @@
 package com.qiuchen.View
 
-import android.annotation.TargetApi
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.text.TextUtils.isEmpty
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import com.qiuchen.API.mJingYi
 import com.qiuchen.Adapter.ViewPager_Content
 import com.qiuchen.Adapter.navigationBarList
@@ -26,19 +31,16 @@ import com.qiuchen.Utils.mUtils
 import com.qiuchen.mSharedContext
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigation_head.*
-import java.io.File
-import java.io.FileOutputStream
-import java.security.Permission
-import java.security.PermissionCollection
-import java.security.Permissions
+import org.w3c.dom.Text
 import java.util.HashMap
-import java.util.jar.Manifest
 import kotlin.collections.ArrayList
 
 class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content.ViewEvent, mJingYi.TaskCallBack, iGetMoreData, ViewPager.OnPageChangeListener, mJingYi.Companion.QRCallBack {
 
     override fun getImgSuccess(status: Int, bit: Bitmap?) {
         runOnUiThread {
+            //通知系统图片加载
+            sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory() + "/scan.png")))
             var str = ""
             when (status) {
                 0 -> {
@@ -50,11 +52,13 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
                 3 ->
                     str = "刷新了二维码！"
                 1 -> {
-                    mUserNick.text = mSharedContext.mLoginState.nickName + " Uid:" + mSharedContext.mLoginState.uid
+                    mUserNick.text = mSharedContext.mLoginState.nickName + "(" + mSharedContext.mLoginState.uid + ")"
                     mUserNick.textSize = 15f
                     mUserPic.setImageBitmap(mSharedContext.mLoginState.pic)
-                    str = "欢迎你,开发者 " + mSharedContext.mLoginState.nickName
+                    mUserPic.setOnClickListener(null)
+                    str = "欢迎你,易友 " + mSharedContext.mLoginState.nickName
                     mBottomControlBar.visibility = View.VISIBLE
+                    mSharedContext.saveCookie()
                 }
             }
             Snackbar.make(window.decorView, str, Snackbar.LENGTH_SHORT).show()
@@ -187,7 +191,9 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
             mUserPic.id -> {
                 if (appInstalled("com.tencent.mm")) {
                     startWeiXin()
-                }else{
+                    Toast.makeText(this, "请在微信中扫描出现的第一张二维码,即可登录论坛!", Toast.LENGTH_LONG)
+                            .show()
+                } else {
                     Snackbar.make(window.decorView, "您还没有安装微信!", Snackbar.LENGTH_SHORT)
                             .show()
                 }
@@ -207,10 +213,36 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
      * 用户退出登录
      */
     fun onExitUser() {
-        mSharedContext.getCookie().initStatus() //清空Cookie
-        //调用加载二维码方法
+        drawer_layout.closeDrawer(Gravity.START)
+        val bDialog = BottomSheetDialog(this)
+        val v = LayoutInflater.from(this).inflate(R.layout.will_exit, null)
+        with(v) {
+            v.findViewById<TextView>(R.id.bottomSheet_willExit_title)
+                    .text = "住手!${mSharedContext.mLoginState.nickName}...你敢?!"
+            v.findViewById<TextView>(R.id.bottomSheet_willExit_body)
+                    .text = "我有一言,请诸位静听.\n如果退出,您将失去叱咤风云 快意恩仇的易语言江湖地位!复兴易语言的大业,将遥遥无期!\n值此业界大难之际,${mSharedContext.mLoginState.nickName}你又有何作为?"
+            v.findViewById<Button>(R.id.bottomSheet_willExit_keep)
+                    .setOnClickListener {
+                        bDialog.dismiss()
+                    }
+            v.findViewById<Button>(R.id.bottomSheet_willExit_exits)
+                    .setOnClickListener {
+                        Toast.makeText(it.context, "社会社会,壮士好走!", Toast.LENGTH_SHORT).show()
+                        bDialog.dismiss()
+                        mSharedContext.getCookie().initStatus()
+                        //调用加载二维码方法
+                        getQR()
+                        mUserNick.text = "点击二维码登录精易"
+                        mBottomControlBar.visibility = View.GONE
+                        mSharedContext.saveCookie() //清空Cookie
+                    }
+        }
+        bDialog.setContentView(v)
+        bDialog.show()
+    }
+
+    private fun getQR() {
         mPresenter.getQR(this)
-        mUserNick.text = "QiuChenly - 扫码登录精易"
-        mBottomControlBar.visibility = View.GONE
+        mUserPic.setOnClickListener(this)
     }
 }
