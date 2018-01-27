@@ -57,9 +57,11 @@ open class nHttp(ret: nHttpRet) {
     }
 
     /**
-     * 20181.24日 v1.1
+     * 2018 1.24日 v1.1
      * 1.废弃setUrl(Url:String)方法,改为构造函数传参
      * 2.优化POST请求自动判断,当设置了DATA数据后自动为POST,仍然保留setMethod_POST(METHOD)方法
+     * 2018 1.26日 v1.2
+     * 1.废弃setMethod_POST(METHOD)方法,保留setMethod(METHOD = POST)方法
      */
     class Builder(mUrl: String = "") {
         private var url = mUrl
@@ -73,13 +75,8 @@ open class nHttp(ret: nHttpRet) {
             return this
         }
 
-        fun setMethod(method: String = METHOD_GET): Builder {
+        fun setMethod(method: String = METHOD_POST): Builder {
             this.method = method
-            return this
-        }
-
-        fun setMethod_POST(): Builder {
-            this.method = METHOD_POST
             return this
         }
 

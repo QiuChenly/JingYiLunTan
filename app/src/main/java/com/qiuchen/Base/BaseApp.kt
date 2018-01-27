@@ -41,9 +41,10 @@ abstract class BaseApp : AppCompatActivity(), View.OnClickListener {
         InitOver()
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     fun getPermission(): Array<String> {
         return arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS,
-                android.Manifest.permission.INTERNET)
+                android.Manifest.permission.INTERNET, android.Manifest.permission.ACCESS_NETWORK_STATE)
     }
 
     /**

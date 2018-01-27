@@ -28,10 +28,11 @@ class mSharedContext : Application() {
     }
 
     companion object {
-        @SuppressLint("StaticFieldLeak")
         private lateinit var mContext: Context
         private lateinit var CookieEx: nHttp.nCookie
         private lateinit var mSP: SharedPreferences
+
+        var hasNetwork = false
 
         var mLoginState = com.qiuchen.DataModel.mLoginState()
 

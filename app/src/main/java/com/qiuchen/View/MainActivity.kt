@@ -1,7 +1,9 @@
 package com.qiuchen.View
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -32,7 +34,7 @@ import com.qiuchen.mSharedContext
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigation_head.*
 import org.w3c.dom.Text
-import java.util.HashMap
+import java.util.*
 import kotlin.collections.ArrayList
 
 class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content.ViewEvent, mJingYi.TaskCallBack, iGetMoreData, ViewPager.OnPageChangeListener, mJingYi.Companion.QRCallBack {
@@ -94,7 +96,10 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
     }
 
     override fun getMoreData() {
-        mJingYi.getTaskList(this)
+        if (hasNet())
+            mJingYi.getTaskList(this)
+        else Snackbar.make(window.decorView, "数据获取失败！请检查网络环境！", Snackbar.LENGTH_SHORT).show()
+
     }
 
     override fun taskGetFailed() {
@@ -116,8 +121,10 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
     override fun ViewPagerViewEvent(view: View, position: Int) {
         when (position) {
             0 -> {
-                mShowCareList = ShowCareListJ(mViews[0], this, this)
-                mJingYi.getTaskList(this)
+                mShowCareList = ShowCareListJ(view, this, this)
+                if (hasNet()) {
+                    mJingYi.getTaskList(this)
+                } else Toast.makeText(this, "无网络连接哦!", Toast.LENGTH_SHORT).show()
             }
             1 -> {
             }
@@ -155,7 +162,7 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
                 layoutInflater.inflate(R.layout.activity_randomgoodsource, null),
                 layoutInflater.inflate(R.layout.activity_lastedhelp, null)
         ).toList()
-        mContentVP.offscreenPageLimit = 10
+        mContentVP.offscreenPageLimit = 3
         mContentVP.adapter = ViewPager_Content(mViews, this)
         mContentVP.addOnPageChangeListener(this)
 
@@ -165,11 +172,26 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         mUserPic.setOnClickListener(this)
         mContentTitle.text = "论坛接单"
 
-        if (mSharedContext.getCookie().toString().isEmpty()) {
-            mPresenter.getQR(this)
-        } else {
-            mPresenter.autoLogin(this)
+        //启动网络监测
+        mSharedContext.hasNetwork = hasNet()
+        hasNets = !hasNet()
+        if (mSharedContext.hasNetwork)
+            if (mSharedContext.getCookie().toString().isEmpty()) {
+                mPresenter.getQR(this)
+            } else {
+                mPresenter.autoLogin(this)
+            }
+        else {
+            Toast.makeText(this, "无网络连接!", Toast.LENGTH_SHORT).show()
+            mUserNick.text = "请连接网络先~"
         }
+    }
+
+
+    fun hasNet(): Boolean {
+        val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = cm.activeNetworkInfo
+        return networkInfo?.isAvailable ?: false
     }
 
     override fun getSet(mSet: mLayoutSet): mLayoutSet {
@@ -180,6 +202,7 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         }
     }
 
+    var hasNets: Boolean = true
     override fun onClick(p0: View) {
         when (p0.id) {
             mNavigationExitUser.id -> {
@@ -189,6 +212,14 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
                 drawer_layout.openDrawer(Gravity.START)
             }
             mUserPic.id -> {
+                if (!hasNet()) {
+                    return
+                }
+                if (hasNets) {
+                    mUserNick.text = "点击二维码登录精易"
+                    getQR()
+                    return
+                }
                 if (appInstalled("com.tencent.mm")) {
                     startWeiXin()
                     Toast.makeText(this, "请在微信中扫描出现的第一张二维码,即可登录论坛!", Toast.LENGTH_LONG)
@@ -220,7 +251,7 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
             v.findViewById<TextView>(R.id.bottomSheet_willExit_title)
                     .text = "住手!${mSharedContext.mLoginState.nickName}...你敢?!"
             v.findViewById<TextView>(R.id.bottomSheet_willExit_body)
-                    .text = "我有一言,请诸位静听.\n如果退出,您将失去叱咤风云 快意恩仇的易语言江湖地位!复兴易语言的大业,将遥遥无期!\n值此业界大难之际,${mSharedContext.mLoginState.nickName}你又有何作为?"
+                    .text = "我有一言,请诸位静听:\n如果退出逐鹿中原,您将失去叱咤风云 快意恩仇的易语言江湖地位!复兴易语言的大业,将遥遥无期!\n值此业界大难之际,${mSharedContext.mLoginState.nickName}你又有何作为?"
             v.findViewById<Button>(R.id.bottomSheet_willExit_keep)
                     .setOnClickListener {
                         bDialog.dismiss()

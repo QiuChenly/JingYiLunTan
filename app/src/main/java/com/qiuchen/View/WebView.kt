@@ -57,7 +57,7 @@ class WebView : BaseApp() {
                 Toast.makeText(view.context, "复制数据到剪切板成功！", Toast.LENGTH_SHORT)
                         .show()
             })
-            mRefresh.setOnClickListener({ view: View ->
+            mRefresh.setOnClickListener({
                 mWebView.loadUrl(Url)
                 dialog.dismiss()
             })
