@@ -2,10 +2,7 @@ package com.qiuchen.View
 
 import android.content.ClipboardManager
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
-import android.support.design.widget.Snackbar
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View

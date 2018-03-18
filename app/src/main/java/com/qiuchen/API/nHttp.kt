@@ -2,10 +2,12 @@ package com.qiuchen.jingyi.nativeHttp
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
+import java.util.*
 
 /**
  * Created by qiuchen on 2018/1/22.
@@ -140,7 +142,7 @@ open class nHttp(ret: nHttpRet) {
         private fun RequestHttp(u: String, m: String, data: ByteArray, RequestHeader: HashMap<String, String>, allowRedirect: Boolean): nHttpRet {
             val urlConn = URL(u).openConnection() as HttpURLConnection
             urlConn.requestMethod = m
-            urlConn.connectTimeout = 15000
+            urlConn.connectTimeout = 5000
             urlConn.readTimeout = 5000
             if (data.isNotEmpty()) {
                 urlConn.requestMethod = METHOD_POST

@@ -1,30 +1,25 @@
 package com.qiuchen.Adapter
 
-import android.animation.ObjectAnimator
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.animation.DecelerateInterpolator
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.R
 import com.qiuchen.Utils.mUtils
 import com.qiuchen.Utils.mUtilsJ
-import com.qiuchen.View.MainActivity
 import com.qiuchen.View.WebView
 import com.qiuchen.mSharedContext
 import kotlinx.android.synthetic.main.card_main_3.view.*
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by qiuchen on 2018/1/1.
@@ -45,6 +40,7 @@ class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var 
         return mList.size
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val mTasks = mList[position]
         val mAnimal = AnimationUtils.loadAnimation(mSharedContext.getContext(), R.anim.recyclerview_item)

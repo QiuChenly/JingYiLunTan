@@ -1,10 +1,8 @@
 package com.qiuchen.API
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Environment
 import com.google.gson.Gson
-import com.qiuchen.DataModel.mLoginState
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.DataModel.mTaskList
 import com.qiuchen.R

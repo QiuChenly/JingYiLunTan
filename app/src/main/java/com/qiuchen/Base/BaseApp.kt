@@ -2,16 +2,12 @@ package com.qiuchen.Base
 
 import android.content.ComponentName
 import android.content.Intent
-import android.media.MediaScannerConnection
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.support.annotation.RequiresApi
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.Toast
 
 /**
  * Created by qiuchen on 2017/12/31.

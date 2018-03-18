@@ -5,20 +5,16 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.qiuchen.API.mJingYi
@@ -33,7 +29,6 @@ import com.qiuchen.Utils.mUtils
 import com.qiuchen.mSharedContext
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigation_head.*
-import org.w3c.dom.Text
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -75,7 +70,7 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         when (position) {
             0 ->
-                mContentTitle.text = "论坛接单(" + mShowCareList.getCount() + ")"
+                mContentTitle.text = "论坛接单(" + mShowCareList.count + ")"
             else -> {
                 mContentTitle.text = mJingYi.getTitle[position]
             }
@@ -98,14 +93,16 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
     override fun getMoreData() {
         if (hasNet())
             mJingYi.getTaskList(this)
-        else Snackbar.make(window.decorView, "数据获取失败！请检查网络环境！", Snackbar.LENGTH_SHORT).show()
-
+        else {
+            Snackbar.make(window.decorView, "数据获取失败！请检查网络环境！", Snackbar.LENGTH_SHORT).show()
+            taskOver()
+        }
     }
 
     override fun taskGetFailed() {
         runOnUiThread {
             Snackbar.make(window.decorView, "数据获取失败！请检查网络环境！", Snackbar.LENGTH_SHORT).show()
-            mContentTitle.text = "论坛接单(" + mShowCareList.getCount() + ")"
+            mContentTitle.text = "论坛接单(" + mShowCareList.count + ")"
         }
     }
 
@@ -114,7 +111,7 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
             Snackbar.make(window.decorView, "数据获取完成!", Snackbar.LENGTH_SHORT)
                     .show()
             mShowCareList.addDatas(a)
-            mContentTitle.text = "论坛接单(" + mShowCareList.getCount() + ")"
+            mContentTitle.text = "论坛接单(" + mShowCareList.count + ")"
         }
     }
 
@@ -174,16 +171,16 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
 
         //启动网络监测
         mSharedContext.hasNetwork = hasNet()
-        hasNets = !hasNet()
-        if (mSharedContext.hasNetwork)
+        if (mSharedContext.hasNetwork) {
+            isNoNet = false
             if (mSharedContext.getCookie().toString().isEmpty()) {
                 mPresenter.getQR(this)
             } else {
                 mPresenter.autoLogin(this)
             }
-        else {
-            Toast.makeText(this, "无网络连接!", Toast.LENGTH_SHORT).show()
-            mUserNick.text = "请连接网络先~"
+        } else {
+            mUserNick.text = "请连接网络再戳我~"
+            isNoNet = true
         }
     }
 
@@ -191,7 +188,7 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
     fun hasNet(): Boolean {
         val cm = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = cm.activeNetworkInfo
-        return networkInfo?.isAvailable ?: false
+        return networkInfo?.isAvailable == true
     }
 
     override fun getSet(mSet: mLayoutSet): mLayoutSet {
@@ -202,7 +199,7 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         }
     }
 
-    var hasNets: Boolean = true
+    var isNoNet = true
     override fun onClick(p0: View) {
         when (p0.id) {
             mNavigationExitUser.id -> {
@@ -215,9 +212,10 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
                 if (!hasNet()) {
                     return
                 }
-                if (hasNets) {
+                if (hasNet() && isNoNet) {
                     mUserNick.text = "点击二维码登录精易"
                     getQR()
+                    isNoNet = false
                     return
                 }
                 if (appInstalled("com.tencent.mm")) {
@@ -273,7 +271,13 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
     }
 
     private fun getQR() {
-        mPresenter.getQR(this)
-        mUserPic.setOnClickListener(this)
+        if (hasNet()) {
+            if (mSharedContext.getCookie().toString().isEmpty()) {
+                mPresenter.getQR(this)
+                mUserPic.setOnClickListener(this)
+            } else {
+                mPresenter.autoLogin(this)
+            }
+        }
     }
 }

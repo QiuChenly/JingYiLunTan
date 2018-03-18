@@ -3,7 +3,7 @@ package com.qiuchen.Utils
 import com.qiuchen.DataModel.mTask
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by qiuchen on 2018/1/1.
@@ -33,6 +33,7 @@ class mUtils {
             }
             return list
         }
+
         lateinit var mDataBaseHelper: mDataBaseHelper
     }
 }
