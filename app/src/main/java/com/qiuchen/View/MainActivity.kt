@@ -1,3 +1,4 @@
+/*
 package com.qiuchen.View
 
 import android.content.Context
@@ -5,13 +6,16 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import android.support.design.widget.BottomSheetDialog
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
+import android.transition.Slide
 import android.view.Gravity
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -20,19 +24,32 @@ import android.widget.Toast
 import com.qiuchen.API.mJingYi
 import com.qiuchen.Adapter.ViewPager_Content
 import com.qiuchen.Adapter.navigationBarList
-import com.qiuchen.Base.BaseApp
-import com.qiuchen.Base.mLayoutSet
+import com.qiuchen.Base.BaseActivity
 import com.qiuchen.DataModel.mTask
+import com.qiuchen.Datas.MainData
+import com.qiuchen.Models.MainModel
 import com.qiuchen.Presenter.mPresenter
 import com.qiuchen.R
 import com.qiuchen.Utils.mUtils
+import com.qiuchen.Views.MainView
 import com.qiuchen.mSharedContext
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.navigation_head.*
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content.ViewEvent, mJingYi.TaskCallBack, iGetMoreData, ViewPager.OnPageChangeListener, mJingYi.Companion.QRCallBack {
+class MainActivity : BaseActivity<MainView, MainModel, MainData>(), navigationBarList.onItemClick, ViewPager_Content.ViewEvent, mJingYi.TaskCallBack, iGetMoreData, ViewPager.OnPageChangeListener, mJingYi.Companion.QRCallBack, MainView, View.OnClickListener {
+    override fun getLayout(): Int {
+        return R.layout.activity_main
+    }
+
+    override fun createView(): MainView {
+        return this
+    }
+
+    override fun createPresenter(): MainData {
+        return MainData()
+    }
 
     override fun getImgSuccess(status: Int, bit: Bitmap?) {
         runOnUiThread {
@@ -61,7 +78,6 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
             Snackbar.make(window.decorView, str, Snackbar.LENGTH_SHORT).show()
         }
     }
-
 
     override fun onPageScrollStateChanged(state: Int) {
 
@@ -130,19 +146,22 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         }
     }
 
-    override fun onPressBackKey(): Boolean {
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
             return true
         }
-        return false
+        return super.onKeyUp(keyCode, event)
     }
 
     lateinit var mViews: List<View>
 
     lateinit var mShowCareList: ShowCareListJ
 
-    override fun InitOver() {
+    fun InitOver() {
+
+
+
         mNavigationList.layoutManager = LinearLayoutManager(this)
         val adapterData = ArrayList<Map<Int, String>>()
         for ((a, str) in mJingYi.getTitle.withIndex()) {
@@ -191,14 +210,6 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         return networkInfo?.isAvailable == true
     }
 
-    override fun getSet(mSet: mLayoutSet): mLayoutSet {
-        return mSet.apply {
-            this.BackNoCallBack = false
-            this.layout = R.layout.activity_main
-            this.TranslateBar = true
-        }
-    }
-
     var isNoNet = true
     override fun onClick(p0: View) {
         when (p0.id) {
@@ -230,17 +241,21 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
         }
     }
 
-    /**
-     * NavigationItem点击联动VP
-     */
+    */
+/**
+ * NavigationItem点击联动VP
+ *//*
+
     override fun onItemClick(position: Int) {
         mContentVP.currentItem = position
         drawer_layout.closeDrawer(Gravity.START)
     }
 
-    /**
-     * 用户退出登录
-     */
+    */
+/**
+ * 用户退出登录
+ *//*
+
     fun onExitUser() {
         drawer_layout.closeDrawer(Gravity.START)
         val bDialog = BottomSheetDialog(this)
@@ -280,4 +295,9 @@ class MainActivity : BaseApp(), navigationBarList.onItemClick, ViewPager_Content
             }
         }
     }
+
+    override fun onCreated() {
+       // InitOver()
+    }
 }
+*/

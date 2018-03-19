@@ -5,7 +5,6 @@ import android.os.Environment
 import com.google.gson.Gson
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.DataModel.mTaskList
-import com.qiuchen.R
 import com.qiuchen.jingyi.nativeHttp.nHttp
 import com.qiuchen.mSharedContext
 import java.io.File
@@ -22,12 +21,7 @@ class mJingYi {
         val MAIN_URL = "https://bbs.125.la/"
         val _TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
         val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"
-        val getTitle = arrayOf("论坛接单", "随机精华", "最新求助")
-        val getImage = arrayOf(
-                R.drawable.ic_monetization_on_black_24dp,
-                R.drawable.ic_feedback_black_24dp,
-                R.drawable.ic_sentiment_very_dissatisfied_black_24dp
-        )
+
 
         fun getTaskList(t: TaskCallBack) {
             Thread {

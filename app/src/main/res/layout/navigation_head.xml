@@ -1,90 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/mAppBar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+        android:background="@mipmap/navigation_back"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:contentInsetStart="0dp">
+        <ImageView
+            android:id="@+id/mUserPic"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/navigation_back"
-                android:clickable="true"
-                android:foreground="?attr/selectableItemBackgroundBorderless"
-                android:gravity="center"
-                android:orientation="vertical">
+        <TextView
+            android:id="@+id/mUserNick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="点击二维码登录精易"
+            android:textColor="#cdd5de"
+            android:textSize="20dp" />
+    </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/mUserPic"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:scaleType="centerCrop"/>
-
-                <TextView
-                    android:id="@+id/mUserNick"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:text="点击二维码登录精易"
-                    android:textColor="#cdd5de"
-                    android:textSize="20dp" />
-            </LinearLayout>
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/mNavigationList"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:id="@+id/fl_menu"
+        android:layout_height="match_parent" />
 
-    </android.support.v7.widget.RecyclerView>
+    <!--  <RelativeLayout
+          android:id="@+id/mBottomControlBar"
+          android:layout_width="match_parent"
+          android:layout_height="45dp"
+          android:layout_gravity="bottom"
+          android:elevation="15dp"
+          android:orientation="horizontal"
+          android:visibility="gone">
 
+          <View
+              android:id="@+id/mSlip"
+              android:layout_width="match_parent"
+              android:layout_height="0.5dp"
+              android:background="#bdbdbd"
+              android:foregroundGravity="top" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:id="@+id/mBottomControlBar"
-        android:layout_gravity="bottom"
-        android:elevation="15dp"
-        android:visibility="gone"
-        android:orientation="horizontal"
-        app:layout_behavior=".Base.FabBehavior">
-
-        <View
-            android:id="@+id/mSlip"
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#bdbdbd"
-            android:foregroundGravity="top" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/mSlip">
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_below="@+id/mSlip">
 
 
-            <Button
-                android:id="@+id/mNavigationExitUser"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/select_item_back"
-                android:text="退出当前账号"
-                app:srcCompat="@android:drawable/btn_star" />
-        </LinearLayout>
-
-
-    </RelativeLayout>
-</android.support.design.widget.CoordinatorLayout>
+              <Button
+                  android:id="@+id/mNavigationExitUser"
+                  android:layout_width="0dp"
+                  android:layout_height="match_parent"
+                  android:layout_weight="1"
+                  android:background="@drawable/select_item_back"
+                  android:text="退出当前账号" />
+          </LinearLayout>
+      </RelativeLayout>-->
+</LinearLayout>

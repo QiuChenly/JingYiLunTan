@@ -3,7 +3,8 @@ package com.qiuchen.DataModel;
 import android.graphics.Bitmap;
 
 /**
- * Created by QiuChenly on 2018年1月10日 0010.
+ * @author QiuChenLuoYe 2018年03月18日 18时09分 创建.
+ * @since 登录状态
  */
 
 public class mLoginState {

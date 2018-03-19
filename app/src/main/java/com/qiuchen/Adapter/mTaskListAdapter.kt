@@ -56,7 +56,9 @@ class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var 
         holder.itemView.setOnClickListener(this)
         holder.itemView.setOnTouchListener(this)
         holder.itemView.setOnClickListener { view: View ->
-            context.startActivity(Intent(view.context, WebView::class.java).putExtra("url", mTasks.url), ActivityOptions.makeSceneTransitionAnimation(context as Activity, view, "mTranslates").toBundle())
+            context.startActivity(
+                    Intent(view.context, WebView::class.java).putExtra("url", mTasks.url),
+                    ActivityOptions.makeSceneTransitionAnimation(context as Activity, view, "mTranslates").toBundle())
         }
     }
 

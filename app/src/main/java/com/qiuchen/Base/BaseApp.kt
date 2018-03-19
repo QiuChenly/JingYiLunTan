@@ -1,6 +1,5 @@
 package com.qiuchen.Base
 
-import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -63,7 +62,7 @@ abstract class BaseApp : AppCompatActivity(), View.OnClickListener {
         if (mSet.BackNoCallBack) {
             return
         }
-        var time = System.currentTimeMillis()
+        val time = System.currentTimeMillis()
         if (mSet.doubleClickExit && time - this.time > 2000) {
             this.time = time
             Snackbar.make(window.decorView, "请再按一次退出App", Snackbar.LENGTH_SHORT)
@@ -76,26 +75,7 @@ abstract class BaseApp : AppCompatActivity(), View.OnClickListener {
         super.onBackPressed()
     }
 
-    fun appInstalled(str: String): Boolean {
-        packageManager.getInstalledPackages(0)
-                .forEach {
-                    val pi = it
-                    if (pi.packageName == str) {
-                        return true
-                    }
-                }
-        return false
-    }
 
-    fun startWeiXin() {
-        val c = ComponentName("com.tencent.mm", "com.tencent.mm.ui.LauncherUI")
-        val i = Intent()
-        i.component = c
-        i.action = Intent.ACTION_MAIN
-        i.addCategory(Intent.CATEGORY_LAUNCHER)
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(i)
-    }
 
     fun <T> go(cls: Class<T>) {
         startActivity(Intent(this, cls))//cls::class.java
