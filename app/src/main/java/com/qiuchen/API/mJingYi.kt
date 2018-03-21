@@ -12,12 +12,13 @@ import java.io.FileOutputStream
 import java.util.regex.Pattern
 
 /**
- * Created by qiuchen on 2018/1/1.
+ * @author QiuChenLuoYe 在 2018/1/1 下午10:30.
+ * @since
  */
 class mJingYi {
     companion object {
         val TAG = "QiuChen"
-        val TASK_REGEX = "<tr><td><a href=\"(.*?)\" title=\"(.*?)\" target=\"_blank\">(.*?)</a></td><td><font color=#.*?><b>(.*?)</b></font></td><td>(.*?)</td><td><span title=\"(.*?)\">(.*?)</span></td><td></td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)</a></td></tr>"
+        val TASK_REGEX = "<a href=\"(.*?)\" title=\"点击查看该订单的帖子\" target=\"_blank\">(.*?)<\\/a><\\/td><td><font color=#FF6600><b>(.*?)<\\/b><\\/font><\\/td><td>(.*?)<\\/td><td>(.*?)<\\/td><td><\\/td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)<\\/a><\\/td><td><a href=\"(.*?)\" target=\"_blank\">点击联系<\\/a>"
         val MAIN_URL = "https://bbs.125.la/"
         val _TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
         val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"

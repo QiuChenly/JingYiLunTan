@@ -1,46 +1,41 @@
 package com.qiuchen.Adapter
 
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
+import com.qiuchen.Base.BaseVH
 import com.qiuchen.Beans.MenuBean
 import com.qiuchen.R
+import kotlinx.android.synthetic.main.item_menu.view.*
 
 /**
  * @author QiuChenLuoYe 在 2018/3/19 下午2:25.
  * @since
  */
-class MenuAdapter(mList: List<MenuBean>, mCallback: MenuItemCallback) : BaseAdapter() {
-    private var mList: List<MenuBean>? = mList
-    private var mCallback: MenuItemCallback? = mCallback
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var item = convertView
-        if (item == null) item = LayoutInflater.from(parent?.context).inflate(R.layout.item_menu, parent, false)
-
-        //bind click
-        with(item!!) {
+class MenuAdapter(mList: List<MenuBean>, mCallback: MenuItemCallback) : RecyclerView.Adapter<BaseVH>() {
+    override fun onBindViewHolder(holder: BaseVH, position: Int) {
+        with(holder.itemView!!) {
             setOnClickListener {
-                mCallback!!.onClick(position)
+                mCallback!!.onClick(position, mList!![position].title)
             }
+            menu_title.text = mList!![position].title
+            menu_icon.setImageResource(mList!![position].icon)
         }
-        return item
     }
 
-    override fun getItem(position: Int): Any {
-        return mList!![position]
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    override fun getCount(): Int {
+    override fun getItemCount(): Int {
         return mList!!.size
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseVH {
+        val item = LayoutInflater.from(parent.context).inflate(R.layout.item_menu, parent, false)
+        return BaseVH(item)
+    }
+
+    private var mList: List<MenuBean>? = mList
+    private var mCallback: MenuItemCallback? = mCallback
+
     interface MenuItemCallback {
-        fun onClick(position: Int)
+        fun onClick(position: Int, title: String)
     }
 }

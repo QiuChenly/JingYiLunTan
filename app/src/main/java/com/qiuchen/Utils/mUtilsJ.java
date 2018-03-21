@@ -11,6 +11,7 @@ import android.view.animation.DecelerateInterpolator;
  */
 
 public class mUtilsJ {
+
     public static boolean onTouch(View view, MotionEvent motionEvent) {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:

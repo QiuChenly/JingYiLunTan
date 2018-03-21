@@ -24,6 +24,13 @@ class MainActivityEx : BaseActivity<MainView, MainModel, MainData>(), MainView {
     override fun createPresenter() = MainData()
 
     override fun onCreated() {
+        setSupportActionBar(tb_Content)
+//        supportActionBar?.setHomeButtonEnabled(true)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        val toggle = ActionBarDrawerToggle(this,drawer_layout,tb_Content,R.string.navi_open,R.string.navi_close)
+//        drawer_layout.setDrawerListener(toggle)
+//        toggle.syncState()
+
         //进场动画
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.enterTransition = Slide().setDuration(200)
@@ -34,32 +41,40 @@ class MainActivityEx : BaseActivity<MainView, MainModel, MainData>(), MainView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 
-        fl_mToolBarMenu.setOnClickListener {
-            drawer_layout.openDrawer(Gravity.START)
-        }
-
         //偷懒模式开启
         //坚决不做viewpager
         supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.fl_menu, MenuFragment())
                 .commit()
+        tv_title.text = "精易助手"
     }
 
-    fun switchViews(position: Int) {
+    fun switchViews(position: Int, title: String) {
+        tv_title.text = title
         supportFragmentManager.beginTransaction().replace(R.id.fl_mainContent,
                 when (position) {
                     0 -> {
                         ForumOrderFragment()
                     }
                     else -> {
-                        ForumOrderFragment()
+                        android.support.v4.app.Fragment()
                     }
                 }).commit()
+        if (drawer_layout.isDrawerOpen(Gravity.START)) drawer_layout.closeDrawer(Gravity.START)
     }
 
 
+    //    private var last = 0L
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        /* if (keyCode == KeyEvent.KEYCODE_BACK) {
+             if (System.currentTimeMillis() - last > 2000) {
+                 Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show()
+                 last = System.currentTimeMillis()
+             } else
+                 System.exit(0)
+             return true
+         }*/
         if (keyCode == KeyEvent.KEYCODE_BACK && drawer_layout.isDrawerOpen(Gravity.START)) {
             drawer_layout.closeDrawer(Gravity.START)
             return true

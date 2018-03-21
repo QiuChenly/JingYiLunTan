@@ -16,50 +16,28 @@
             android:background="#2196f3">
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/mContentToolbar"
+                android:id="@+id/tb_Content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="25dp"
-                app:contentInsetStart="0dp">
+                app:contentInsetStart="0dp"
+                android:layout_marginTop="25dp">
 
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tv_title"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_centerInParent="true"
-                        android:gravity="center">
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:singleLine="true"
+                        android:text="title"
+                        android:textColor="#ffffff"
+                        android:textSize="17sp" />
 
-                        <TextView
-                            android:id="@+id/tv_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:singleLine="true"
-                            android:text="title"
-                            android:textColor="#ffffff"
-                            android:textSize="17sp" />
-
-                    </LinearLayout>
-
-                    <FrameLayout
-                        android:id="@+id/fl_mToolBarMenu"
-                        android:layout_width="45dp"
-                        android:layout_height="match_parent"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true">
-
-                        <ImageView
-                            android:layout_width="25dp"
-                            android:layout_height="25dp"
-                            android:layout_centerVertical="true"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_menu_black_24dp" />
-                    </FrameLayout>
-                </RelativeLayout>
-
+                </LinearLayout>
 
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.AppBarLayout>
@@ -73,8 +51,8 @@
     <android.support.design.widget.NavigationView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:insetForeground="#00000000"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        app:insetForeground="#00000000">
 
         <include layout="@layout/navigation_head" />
     </android.support.design.widget.NavigationView>

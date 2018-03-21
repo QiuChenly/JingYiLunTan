@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 
 /**
  * @author QiuChenLuoYe 2018年03月18日 18时11分 创建.
@@ -20,6 +21,10 @@ abstract class BaseFragment<V : BaseView, M : BaseModel, P : BasePresenter<V, M>
     private var mView: V? = null
     private var mPres: P? = null
 
+    fun Fragment.show(msg: String) {
+        Toast.makeText(this.context, msg, Toast.LENGTH_SHORT).show()
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(getLayout(), null)
@@ -33,9 +38,9 @@ abstract class BaseFragment<V : BaseView, M : BaseModel, P : BasePresenter<V, M>
         onCreated()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
         if (view != null && mPres != null) mPres?.detach()
+        super.onDestroyView()
     }
 
     fun getPres(): P? {

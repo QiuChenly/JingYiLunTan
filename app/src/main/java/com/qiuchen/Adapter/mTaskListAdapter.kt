@@ -5,7 +5,6 @@ import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -17,7 +16,6 @@ import com.qiuchen.R
 import com.qiuchen.Utils.mUtils
 import com.qiuchen.Utils.mUtilsJ
 import com.qiuchen.View.WebView
-import com.qiuchen.mSharedContext
 import kotlinx.android.synthetic.main.card_main_3.view.*
 import java.util.*
 
@@ -40,10 +38,9 @@ class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var 
         return mList.size
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val mTasks = mList[position]
-        val mAnimal = AnimationUtils.loadAnimation(mSharedContext.getContext(), R.anim.recyclerview_item)
+        val mAnimal = AnimationUtils.loadAnimation(context, R.anim.recyclerview_item)
         holder.itemView.startAnimation(mAnimal)
         with(holder.itemView) {
             this.tag = position
@@ -56,9 +53,12 @@ class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var 
         holder.itemView.setOnClickListener(this)
         holder.itemView.setOnTouchListener(this)
         holder.itemView.setOnClickListener { view: View ->
-            context.startActivity(
-                    Intent(view.context, WebView::class.java).putExtra("url", mTasks.url),
-                    ActivityOptions.makeSceneTransitionAnimation(context as Activity, view, "mTranslates").toBundle())
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                context.startActivity(
+                        Intent(view.context, WebView::class.java).putExtra("url", mTasks.url),
+                        ActivityOptions.makeSceneTransitionAnimation(context as Activity, view, "mTranslates").toBundle())
+            } else context.startActivity(
+                    Intent(view.context, WebView::class.java).putExtra("url", mTasks.url))
         }
     }
 
@@ -75,7 +75,7 @@ class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var 
     }
 
     fun setData(data: ArrayList<mTask>) {
-        mList.addAll(data)
+        mList = data
         notifyDataSetChanged()
         //加入数据库
         for (mTask in mList) {

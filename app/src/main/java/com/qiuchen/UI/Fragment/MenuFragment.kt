@@ -1,5 +1,10 @@
 package com.qiuchen.UI.Fragment
 
+import android.graphics.Rect
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.View
 import com.qiuchen.Adapter.MenuAdapter
 import com.qiuchen.Base.BaseFragment
 import com.qiuchen.Base.BaseModel
@@ -15,8 +20,8 @@ import kotlinx.android.synthetic.main.layout_menu.*
  * @since
  */
 class MenuFragment : BaseFragment<BaseView, BaseModel, MenuFragment.thisPres>(), BaseView, MenuAdapter.MenuItemCallback {
-    override fun onClick(position: Int) {
-        (activity as MainActivityEx).switchViews(position)
+    override fun onClick(position: Int, title: String) {
+        (activity as MainActivityEx).switchViews(position, title)
     }
 
     override fun getLayout(): Int {
@@ -47,6 +52,13 @@ class MenuFragment : BaseFragment<BaseView, BaseModel, MenuFragment.thisPres>(),
         }, MenuBean().apply {
             title = "最新求助"
             this.icon = R.drawable.ic_sentiment_very_dissatisfied_black_24dp
+        })
+        lv_menu.layoutManager = LinearLayoutManager(this.context)
+        lv_menu.itemAnimator = DefaultItemAnimator()
+        lv_menu.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect?, view: View?, parent: RecyclerView?, state: RecyclerView.State?) {
+                outRect?.bottom = 2
+            }
         })
         lv_menu.adapter = MenuAdapter(list, this)
     }
