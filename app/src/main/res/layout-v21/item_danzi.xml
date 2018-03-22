@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="2dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:transitionName="mTranslates"
+    card_view:cardCornerRadius="@dimen/card_recycler_corner_radius"
+    card_view:cardElevation="1dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/civ_XiaDanFangPic"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/navigation_back" />
+
+            <TextView
+                android:id="@+id/mTaskRV_Author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/card_subtitle_margin"
+                android:layout_marginStart="@dimen/card_subtitle_margin"
+                android:layout_marginTop="@dimen/card_button_margin"
+                android:gravity="center"
+                android:text="title" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/mTaskRV_COST"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/mTaskRV_SENDTIME"
+                android:layout_alignEnd="@+id/mTaskRV_TaskTitle"
+                android:layout_alignRight="@+id/mTaskRV_TaskTitle"
+                android:text="textHere"
+                android:textColor="#d20b0b" />
+
+            <TextView
+                android:id="@+id/mTaskRV_TaskTitle"
+                style="@style/TextAppearance.AppCompat.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="@dimen/card_title_margin"
+                android:layout_marginStart="5dp"
+                android:clickable="true"
+                android:ellipsize="marquee"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:singleLine="true"
+                android:text="textHere"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/mTaskRV_NEEDCODE"
+                android:layout_alignBottom="@+id/mTaskRV_NEEDCODE"
+                android:layout_alignLeft="@+id/mTaskRV_TaskTitle"
+                android:layout_alignStart="@+id/mTaskRV_TaskTitle"
+                android:text="源码：" />
+
+            <TextView
+                android:id="@+id/mTaskRV_NEEDCODE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/mTaskRV_TaskTitle"
+                android:layout_marginEnd="@dimen/card_subtitle_margin"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="@dimen/card_subtitle_margin"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="@dimen/card_button_margin"
+                android:layout_toRightOf="@+id/textView"
+                android:text="不需要" />
+
+            <TextView
+                android:id="@+id/mTaskRV_SENDTIME"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/mTaskRV_NEEDCODE"
+                android:layout_alignLeft="@+id/textView"
+                android:layout_alignRight="@+id/mTaskRV_NEEDCODE"
+                android:layout_alignStart="@+id/textView"
+                android:layout_below="@+id/textView"
+                android:layout_marginTop="@dimen/card_button_margin"
+                android:text="6秒钟前"
+                android:textColor="#666666" />
+
+        </RelativeLayout>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -1,12 +1,13 @@
 package com.qiuchen.UI.Fragment
 
+import android.content.Context
 import android.graphics.Rect
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import com.qiuchen.Adapter.mTaskListAdapter
+import com.qiuchen.Adapter.DanZiAdapter
 import com.qiuchen.Base.BaseFragment
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.Datas.ForumData
@@ -19,7 +20,11 @@ import kotlinx.android.synthetic.main.activity_show_list.*
  * @author QiuChenLuoYe 在 2018/3/19 下午3:10.
  * @since
  */
-class ForumOrderFragment : BaseFragment<ForumView, ForumModel, ForumData>(), ForumView, SwipeRefreshLayout.OnRefreshListener, mTaskListAdapter.onItemClick {
+class ForumOrderFragment : BaseFragment<ForumView, ForumModel, ForumData>(), ForumView, SwipeRefreshLayout.OnRefreshListener, DanZiAdapter.onItemClick {
+    override fun getCtx(): Context {
+        return this.context!!
+    }
+
     override fun onTaskItemBeClick(position: Int, view: View) {
     }
 
@@ -48,7 +53,7 @@ class ForumOrderFragment : BaseFragment<ForumView, ForumModel, ForumData>(), For
         return ForumData()
     }
 
-    private var rv_Adapter: mTaskListAdapter? = null
+    private var rv_Adapter: DanZiAdapter? = null
 
     override fun onCreated() {
         mSwipeRefresh.setOnRefreshListener(this)
@@ -60,7 +65,7 @@ class ForumOrderFragment : BaseFragment<ForumView, ForumModel, ForumData>(), For
                 outRect?.bottom = 5
             }
         })
-        rv_Adapter = mTaskListAdapter(ArrayList(), this, this.context!!)
+        rv_Adapter = DanZiAdapter(ArrayList(), this, this.context!!)
         mTaskListRV.adapter = rv_Adapter
 
         //开启后台线程刷新

@@ -7,6 +7,7 @@ import com.qiuchen.Base.BasePresenter
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.DataModel.mTaskList
 import com.qiuchen.Models.ForumModel
+import com.qiuchen.Utils.mUtils
 import com.qiuchen.Views.ForumView
 import java.util.regex.Pattern
 import kotlin.concurrent.thread
@@ -27,8 +28,8 @@ class ForumData : BasePresenter<ForumView, ForumModel>() {
     fun hand() {
         thread {
             while (getView() != null) {
-                println("thread" + getView())
-                getList()
+                if (mUtils.hasNet(getView()?.getCtx()!!))
+                    getList()
                 Thread.sleep(DELAY_REFRESH)
             }
         }

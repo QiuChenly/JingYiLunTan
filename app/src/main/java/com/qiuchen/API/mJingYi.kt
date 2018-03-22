@@ -20,14 +20,14 @@ class mJingYi {
         val TAG = "QiuChen"
         val TASK_REGEX = "<a href=\"(.*?)\" title=\"点击查看该订单的帖子\" target=\"_blank\">(.*?)<\\/a><\\/td><td><font color=#FF6600><b>(.*?)<\\/b><\\/font><\\/td><td>(.*?)<\\/td><td>(.*?)<\\/td><td><\\/td><td><a href=\"(.*?)\" target=\"_blank\">(.*?)<\\/a><\\/td><td><a href=\"(.*?)\" target=\"_blank\">点击联系<\\/a>"
         val MAIN_URL = "https://bbs.125.la/"
-        val _TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
-        val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"
-
+        const val TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
+        const val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"
+        const val RUANJIAN_SHOW = "https://bbs.125.la/forum.php?mod=forumdisplay&fid=165"
 
         fun getTaskList(t: TaskCallBack) {
             Thread {
                 kotlin.run {
-                    val http = nHttp.Builder(_TASK_LIST + System.currentTimeMillis())
+                    val http = nHttp.Builder(TASK_LIST + System.currentTimeMillis())
                             .setCookieStore(mSharedContext.getCookie())
                             .setRequestHeader("Accept", "*/*")
                             .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")

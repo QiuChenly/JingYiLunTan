@@ -1,5 +1,6 @@
 package com.qiuchen.UI.Fragment
 
+import android.content.Context
 import android.graphics.Rect
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -20,6 +21,10 @@ import kotlinx.android.synthetic.main.layout_menu.*
  * @since
  */
 class MenuFragment : BaseFragment<BaseView, BaseModel, MenuFragment.thisPres>(), BaseView, MenuAdapter.MenuItemCallback {
+    override fun getCtx(): Context {
+        return this.context!!
+    }
+
     override fun onClick(position: Int, title: String) {
         (activity as MainActivityEx).switchViews(position, title)
     }
@@ -44,13 +49,13 @@ class MenuFragment : BaseFragment<BaseView, BaseModel, MenuFragment.thisPres>(),
 
     override fun onCreated() {
         val list = arrayListOf<MenuBean>(MenuBean().apply {
+            title = "论坛资源"
+            this.icon = R.drawable.ic_feedback_black_24dp
+        }, MenuBean().apply {
             title = "论坛接单"
             this.icon = R.drawable.ic_monetization_on_black_24dp
         }, MenuBean().apply {
-            title = "随机精华"
-            this.icon = R.drawable.ic_feedback_black_24dp
-        }, MenuBean().apply {
-            title = "最新求助"
+            title = "软件出售"
             this.icon = R.drawable.ic_sentiment_very_dissatisfied_black_24dp
         })
         lv_menu.layoutManager = LinearLayoutManager(this.context)

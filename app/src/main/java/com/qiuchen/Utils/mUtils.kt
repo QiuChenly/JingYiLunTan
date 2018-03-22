@@ -1,5 +1,7 @@
 package com.qiuchen.Utils
 
+import android.content.Context
+import android.net.ConnectivityManager
 import com.qiuchen.DataModel.mTask
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -32,6 +34,12 @@ class mUtils {
                 }
             }
             return list
+        }
+
+        fun hasNet(context: Context): Boolean {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = cm.activeNetworkInfo
+            return networkInfo?.isAvailable == true
         }
 
         lateinit var mDataBaseHelper: mDataBaseHelper

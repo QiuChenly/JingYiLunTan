@@ -11,18 +11,21 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import com.bumptech.glide.Glide
+import com.qiuchen.API.mJingYi
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.R
 import com.qiuchen.Utils.mUtils
 import com.qiuchen.Utils.mUtilsJ
 import com.qiuchen.View.WebView
-import kotlinx.android.synthetic.main.card_main_3.view.*
+import kotlinx.android.synthetic.main.item_danzi.view.*
 import java.util.*
 
 /**
- * Created by qiuchen on 2018/1/1.
+ * @author QiuChenLuoYe 在 2018/1/1 下午11:02.
+ * @since
  */
-class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(
+class DanZiAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(
 
 ), View.OnClickListener, View.OnTouchListener {
     override fun onClick(p0: View?) {
@@ -31,7 +34,7 @@ class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var 
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return navigationBarList.VH(LayoutInflater.from(parent.context).inflate(R.layout.card_main_3, parent, false))
+        return navigationBarList.VH(LayoutInflater.from(parent.context).inflate(R.layout.item_danzi, parent, false))
     }
 
     override fun getItemCount(): Int {
@@ -49,17 +52,21 @@ class mTaskListAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var 
             mTaskRV_Author.text = mTasks.下单方
             mTaskRV_NEEDCODE.text = mTasks.是否要源码
             mTaskRV_SENDTIME.text = mTasks.发布时间
+            setOnClickListener(this@DanZiAdapter)
+            setOnTouchListener(this@DanZiAdapter)
+            setOnClickListener { view: View ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    context.startActivity(
+                            Intent(view.context, WebView::class.java).putExtra("url", mTasks.url),
+                            ActivityOptions.makeSceneTransitionAnimation(context as Activity, view, "mTranslates").toBundle())
+                } else context.startActivity(
+                        Intent(view.context, WebView::class.java).putExtra("url", mTasks.url))
+            }
         }
-        holder.itemView.setOnClickListener(this)
-        holder.itemView.setOnTouchListener(this)
-        holder.itemView.setOnClickListener { view: View ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                context.startActivity(
-                        Intent(view.context, WebView::class.java).putExtra("url", mTasks.url),
-                        ActivityOptions.makeSceneTransitionAnimation(context as Activity, view, "mTranslates").toBundle())
-            } else context.startActivity(
-                    Intent(view.context, WebView::class.java).putExtra("url", mTasks.url))
-        }
+        if (mUtils.hasNet(this.context))
+            Glide.with(this.context)
+                    .load(mJingYi.DEFAULT_PIC)
+                    .into(holder.itemView.civ_XiaDanFangPic)
     }
 
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {

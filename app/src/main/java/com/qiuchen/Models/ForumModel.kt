@@ -12,7 +12,7 @@ import com.qiuchen.mSharedContext
  */
 class ForumModel : BaseModel(), iForumOrder {
     override fun getList(req: BaseRequest.RequestCallBack) {
-        val u = mJingYi._TASK_LIST + System.currentTimeMillis()
+        val u = mJingYi.TASK_LIST + System.currentTimeMillis()
         BaseRequest(u)
                 .setCookie(mSharedContext.getCookie().toString())
                 .setHeader("X-Requested-With", "XMLHttpRequest")

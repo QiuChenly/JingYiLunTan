@@ -1,5 +1,6 @@
 package com.qiuchen.UI.Activity
 
+import android.content.Context
 import android.os.Build
 import android.transition.Slide
 import android.view.Gravity
@@ -19,10 +20,13 @@ import kotlinx.android.synthetic.main.layout_main.*
  * @since
  */
 class MainActivityEx : BaseActivity<MainView, MainModel, MainData>(), MainView {
+    override fun getCtx(): Context {
+        return this
+    }
+
     override fun getLayout() = R.layout.layout_main
     override fun createView() = this
     override fun createPresenter() = MainData()
-
     override fun onCreated() {
         setSupportActionBar(tb_Content)
 //        supportActionBar?.setHomeButtonEnabled(true)
@@ -54,7 +58,7 @@ class MainActivityEx : BaseActivity<MainView, MainModel, MainData>(), MainView {
         tv_title.text = title
         supportFragmentManager.beginTransaction().replace(R.id.fl_mainContent,
                 when (position) {
-                    0 -> {
+                    1 -> {
                         ForumOrderFragment()
                     }
                     else -> {
