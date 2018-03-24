@@ -1,16 +1,19 @@
 package com.qiuchen.UI.Activity
 
-import android.content.Context
+import android.animation.ObjectAnimator
+import android.app.FragmentTransaction
 import android.os.Build
 import android.transition.Slide
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
+import android.view.animation.AccelerateInterpolator
 import com.qiuchen.Base.BaseActivity
 import com.qiuchen.Datas.MainData
 import com.qiuchen.Models.MainModel
 import com.qiuchen.R
 import com.qiuchen.UI.Fragment.ForumOrderFragment
+import com.qiuchen.UI.Fragment.ForumResources
 import com.qiuchen.UI.Fragment.MenuFragment
 import com.qiuchen.Views.MainView
 import kotlinx.android.synthetic.main.layout_main.*
@@ -20,9 +23,7 @@ import kotlinx.android.synthetic.main.layout_main.*
  * @since
  */
 class MainActivityEx : BaseActivity<MainView, MainModel, MainData>(), MainView {
-    override fun getCtx(): Context {
-        return this
-    }
+
 
     override fun getLayout() = R.layout.layout_main
     override fun createView() = this
@@ -54,17 +55,30 @@ class MainActivityEx : BaseActivity<MainView, MainModel, MainData>(), MainView {
         tv_title.text = "精易助手"
     }
 
+    fun show() {
+        val objectAnimator = ObjectAnimator.ofFloat(supportActionBar, "translationY", 0f)
+        objectAnimator.duration = 200
+        objectAnimator.interpolator = AccelerateInterpolator()
+        objectAnimator.start()
+    }
+
     fun switchViews(position: Int, title: String) {
         tv_title.text = title
         supportFragmentManager.beginTransaction().replace(R.id.fl_mainContent,
                 when (position) {
+                    0 -> {
+                        ForumResources()
+                    }
                     1 -> {
                         ForumOrderFragment()
                     }
                     else -> {
                         android.support.v4.app.Fragment()
                     }
-                }).commit()
+                })
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .commit()
         if (drawer_layout.isDrawerOpen(Gravity.START)) drawer_layout.closeDrawer(Gravity.START)
     }
 

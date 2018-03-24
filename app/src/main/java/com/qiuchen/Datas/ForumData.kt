@@ -7,7 +7,6 @@ import com.qiuchen.Base.BasePresenter
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.DataModel.mTaskList
 import com.qiuchen.Models.ForumModel
-import com.qiuchen.Utils.mUtils
 import com.qiuchen.Views.ForumView
 import java.util.regex.Pattern
 import kotlin.concurrent.thread
@@ -28,8 +27,7 @@ class ForumData : BasePresenter<ForumView, ForumModel>() {
     fun hand() {
         thread {
             while (getView() != null) {
-                if (mUtils.hasNet(getView()?.getCtx()!!))
-                    getList()
+                getList()
                 Thread.sleep(DELAY_REFRESH)
             }
         }
@@ -44,7 +42,6 @@ class ForumData : BasePresenter<ForumView, ForumModel>() {
                 val e = ArrayList<mTask>()
                 while (m.find()) {
                     val f = mTask()
-                    //thread-14109607-1-1.html + https://bbs.125.la/
                     f.url = "https://bbs.125.la/" + m.group(1)
                     f.订单帖子标题 = m.group(2)
                     f.预算价格 = m.group(3)

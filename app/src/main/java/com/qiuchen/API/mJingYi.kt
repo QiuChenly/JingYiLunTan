@@ -23,7 +23,7 @@ class mJingYi {
         const val TASK_LIST = "https://bbs.125.la/plugin.php?id=e3600%3Atask&mod=show&type=1&s=1&a="
         const val DEFAULT_PIC = "https://bbs.125.la:443/uc_server/images/noavatar_small.gif"
         const val RUANJIAN_SHOW = "https://bbs.125.la/forum.php?mod=forumdisplay&fid=165"
-
+        const val RUANJIAN_SHOWMORE = "https://bbs.125.la/forum.php?mod=forumdisplay&fid=165&page=%s&t=7430237"
         fun getTaskList(t: TaskCallBack) {
             Thread {
                 kotlin.run {

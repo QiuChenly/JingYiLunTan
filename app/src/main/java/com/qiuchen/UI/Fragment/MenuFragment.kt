@@ -1,6 +1,5 @@
 package com.qiuchen.UI.Fragment
 
-import android.content.Context
 import android.graphics.Rect
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.LinearLayoutManager
@@ -21,9 +20,7 @@ import kotlinx.android.synthetic.main.layout_menu.*
  * @since
  */
 class MenuFragment : BaseFragment<BaseView, BaseModel, MenuFragment.thisPres>(), BaseView, MenuAdapter.MenuItemCallback {
-    override fun getCtx(): Context {
-        return this.context!!
-    }
+
 
     override fun onClick(position: Int, title: String) {
         (activity as MainActivityEx).switchViews(position, title)

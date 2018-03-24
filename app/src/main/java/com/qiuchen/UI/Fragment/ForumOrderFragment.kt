@@ -1,6 +1,5 @@
 package com.qiuchen.UI.Fragment
 
-import android.content.Context
 import android.graphics.Rect
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DefaultItemAnimator
@@ -21,9 +20,6 @@ import kotlinx.android.synthetic.main.activity_show_list.*
  * @since
  */
 class ForumOrderFragment : BaseFragment<ForumView, ForumModel, ForumData>(), ForumView, SwipeRefreshLayout.OnRefreshListener, DanZiAdapter.onItemClick {
-    override fun getCtx(): Context {
-        return this.context!!
-    }
 
     override fun onTaskItemBeClick(position: Int, view: View) {
     }

@@ -1,7 +1,6 @@
 package com.qiuchen.UI.Activity
 
 import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.qiuchen.Base.BaseActivity
@@ -15,9 +14,7 @@ import com.qiuchen.Views.SplashView
  * @since
  */
 class SplashActivity : BaseActivity<SplashView, BaseModel, SplashData>(), SplashView {
-    override fun getCtx(): Context {
-        return this
-    }
+
 
     override fun createPresenter(): SplashData {
         return SplashData()
