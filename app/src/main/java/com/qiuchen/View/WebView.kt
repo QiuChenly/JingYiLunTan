@@ -9,7 +9,6 @@ import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.LinearLayout
 import android.widget.Toast
 import com.qiuchen.Base.BaseApp
 import com.qiuchen.Base.mLayoutSet
@@ -21,12 +20,13 @@ class WebView : BaseApp() {
     override fun InitOver() {
         Url = this.intent.getStringExtra("url")
 
-        mWebView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                view.loadUrl(url)
-                return true
-            }
-        }
+        mWebView.setWebViewClient(
+                object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                        view.loadUrl(url)
+                        return true
+                    }
+                })
         mWebView.settings.apply {
             javaScriptEnabled = true
             setAppCacheEnabled(true)
@@ -61,8 +61,8 @@ class WebView : BaseApp() {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             val dialog = BottomSheetDialog(this)
             val view = LayoutInflater.from(this).inflate(R.layout.menu_task, null)
-            val mRefresh = view.findViewById<LinearLayout>(R.id.mRefresh)
-            val mCopyURL = view.findViewById<LinearLayout>(R.id.mCopyURL)
+            val mRefresh = view.findViewById(R.id.mRefresh)
+            val mCopyURL = view.findViewById(R.id.mCopyURL)
 
             mCopyURL.setOnClickListener({ view: View ->
                 val cp = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager

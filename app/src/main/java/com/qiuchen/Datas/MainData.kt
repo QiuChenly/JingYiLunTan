@@ -12,6 +12,4 @@ class MainData : BasePresenter<MainView, MainModel>() {
     override fun createModel(): MainModel? {
         return MainModel()
     }
-
-
 }

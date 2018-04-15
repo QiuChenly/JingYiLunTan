@@ -23,8 +23,8 @@ import java.util.ArrayList;
 public class ShowCareListJ implements DanZiAdapter.onItemClick, SwipeRefreshLayout.OnRefreshListener {
     public ShowCareListJ(View v, iGetMoreData moreData,Context context) {
         this.moreData = moreData;
-        mView = v.findViewById(R.id.mTaskListRV);
-        mSwipeRefresh = v.findViewById(R.id.mSwipeRefresh);
+        mView = (RecyclerView) v.findViewById(R.id.mTaskListRV);
+        mSwipeRefresh = (SwipeRefreshLayout) v.findViewById(R.id.mSwipeRefresh);
         mSwipeRefresh.setColorSchemeColors(Color.RED, Color.YELLOW, Color.BLACK);
         mSwipeRefresh.setOnRefreshListener(this);
         mView.setHasFixedSize(false);
@@ -44,9 +44,8 @@ public class ShowCareListJ implements DanZiAdapter.onItemClick, SwipeRefreshLayo
 
     @Override
     public void onTaskItemBeClick(int position, @NotNull View view) {
-
+        //弃用方法，此回调不再使用
     }
-
 
     @Override
     public void onRefresh() {

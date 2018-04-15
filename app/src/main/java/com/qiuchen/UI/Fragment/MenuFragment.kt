@@ -12,7 +12,6 @@ import com.qiuchen.Base.BasePresenter
 import com.qiuchen.Base.BaseView
 import com.qiuchen.Beans.MenuBean
 import com.qiuchen.R
-import com.qiuchen.UI.Activity.MainActivityEx
 import kotlinx.android.synthetic.main.layout_menu.*
 
 /**
@@ -23,7 +22,7 @@ class MenuFragment : BaseFragment<BaseView, BaseModel, MenuFragment.thisPres>(),
 
 
     override fun onClick(position: Int, title: String) {
-        (activity as MainActivityEx).switchViews(position, title)
+//        (activity as MainActivityEx).switchViews(position, title)
     }
 
     override fun getLayout(): Int {
@@ -50,6 +49,9 @@ class MenuFragment : BaseFragment<BaseView, BaseModel, MenuFragment.thisPres>(),
             this.icon = R.drawable.ic_feedback_black_24dp
         }, MenuBean().apply {
             title = "论坛接单"
+            this.icon = R.drawable.ic_monetization_on_black_24dp
+        }, MenuBean().apply {
+            title = "娱乐版块"
             this.icon = R.drawable.ic_monetization_on_black_24dp
         }, MenuBean().apply {
             title = "软件出售"

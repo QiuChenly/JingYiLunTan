@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import com.bumptech.glide.Glide
 import com.qiuchen.API.mJingYi
 import com.qiuchen.DataModel.mTask
@@ -43,8 +42,9 @@ class DanZiAdapter(var mList: ArrayList<mTask>, var click: onItemClick, var cont
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val mTasks = mList[position]
-        val mAnimal = AnimationUtils.loadAnimation(context, R.anim.recyclerview_item)
-        holder.itemView.startAnimation(mAnimal)
+        //干掉 Rv的动画效果，实测在部分机器上会引起显示异常
+//        val mAnimal = AnimationUtils.loadAnimation(context, R.anim.recyclerview_item)
+//        holder.itemView.startAnimation(mAnimal)
         with(holder.itemView) {
             this.tag = position
             mTaskRV_COST.text = mTasks.预算价格

@@ -78,9 +78,12 @@ class BaseRequest(var url: String) : Thread() {
                 }
             } else {
                 object : StringRequest(url, Response.Listener {
-                    mRequestCallBack?.onSuccess(it)
+                    //Fix random Closed Exception by qiuchenLY
+                    if (mRequestCallBack != null)
+                        mRequestCallBack?.onSuccess(it)
                 }, Response.ErrorListener {
-                    mRequestCallBack?.onFailed(it.message!!)
+                    if (mRequestCallBack != null)
+                        mRequestCallBack?.onFailed(it.message!!)
                 }) {
                     override fun getHeaders(): MutableMap<String, String> {
                         mList["Cookie"] = cook
