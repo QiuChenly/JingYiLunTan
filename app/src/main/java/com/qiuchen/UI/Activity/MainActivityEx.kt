@@ -3,11 +3,13 @@ package com.qiuchen.UI.Activity
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.qiuchen.Adapter.MainFragmentPagerAdapter
 import com.qiuchen.R
 import kotlinx.android.synthetic.main.layout_main.*
 
@@ -15,7 +17,7 @@ import kotlinx.android.synthetic.main.layout_main.*
  * @author QiuChenLuoYe 2018年03月18日 20时37分 创建.
  * @since
  */
-class MainActivityEx : AppCompatActivity(), View.OnClickListener {
+class MainActivityEx : FragmentActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         ll_MainPage_icon.showGreen(true, 0)
         ll_GuanShui_icon.showGreen(true, 1)
@@ -31,28 +33,38 @@ class MainActivityEx : AppCompatActivity(), View.OnClickListener {
             ll_MainPage.id -> {
                 ll_MainPage_icon.showGreen(false, 0)
                 ll_MainPage_title.showGreen()
+                getNowPage(1)
             }
             ll_GuanShui.id -> {
                 ll_GuanShui_icon.showGreen(false, 1)
                 ll_GuanShui_title.showGreen()
+                getNowPage(2)
             }
 
             ll_JieCare.id -> {
                 ll_JieCare_icon.showGreen(false, 2)
                 ll_JieCare_title.showGreen()
+                getNowPage(3)
             }
 
             ll_user.id -> {
                 ll_user_icon.showGreen(false)
                 ll_user_title.showGreen()
+                getNowPage(4)
             }
         }
+    }
+
+    private fun getNowPage(int: Int) {
+        /*
+        supportFragmentManager.beginTransaction().addToBackStack(null)
+                .commitAllowingStateLoss()
+        */
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_main)
-
 
         //适配多彩状态栏?怕不是喝多了吃饱了撑的。
         /*window.decorView.apply {
@@ -63,6 +75,21 @@ class MainActivityEx : AppCompatActivity(), View.OnClickListener {
         ll_GuanShui.setOnClickListener(this)
         ll_JieCare.setOnClickListener(this)
         ll_user.setOnClickListener(this)
+
+
+        //init all fragments
+        val list = arrayListOf<Fragment>(Fragment(), Fragment(), Fragment())
+
+        //init all fragment for master page
+        // TODO : tomorrow fix some Bugs and add some new features in here. 18/4/18
+
+
+
+        SNSVP_mainContent.adapter = MainFragmentPagerAdapter(supportFragmentManager,list)
+
+
+        //init first page by search information
+        ll_MainPage.callOnClick()
     }
 
     fun TextView.showGreen(black: Boolean = false) {
@@ -101,7 +128,7 @@ class MainActivityEx : AppCompatActivity(), View.OnClickListener {
             }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setBackgroundDrawable(getDrawable(image))
+            background = getDrawable(image)
         } else
             Toast.makeText(this.context, "Android 5.0下不支持此特性！", Toast.LENGTH_SHORT).show()
     }
