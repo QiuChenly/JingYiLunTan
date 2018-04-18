@@ -11,6 +11,8 @@ import android.widget.TextView
 import android.widget.Toast
 import com.qiuchen.Adapter.MainFragmentPagerAdapter
 import com.qiuchen.R
+import com.qiuchen.UI.Fragment.ForumResources
+import com.qiuchen.UI.Fragment.SearchFragment
 import kotlinx.android.synthetic.main.layout_main.*
 
 /**
@@ -56,10 +58,7 @@ class MainActivityEx : FragmentActivity(), View.OnClickListener {
     }
 
     private fun getNowPage(int: Int) {
-        /*
-        supportFragmentManager.beginTransaction().addToBackStack(null)
-                .commitAllowingStateLoss()
-        */
+        SNSVP_mainContent.currentItem = int - 1
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,17 +75,17 @@ class MainActivityEx : FragmentActivity(), View.OnClickListener {
         ll_JieCare.setOnClickListener(this)
         ll_user.setOnClickListener(this)
 
-
         //init all fragments
-        val list = arrayListOf<Fragment>(Fragment(), Fragment(), Fragment())
+        val list = arrayListOf<Fragment>(SearchFragment(),
+                ForumResources(),
+                ForumResources(),
+                ForumResources())
 
         //init all fragment for master page
         // TODO : tomorrow fix some Bugs and add some new features in here. 18/4/18
 
 
-
-        SNSVP_mainContent.adapter = MainFragmentPagerAdapter(supportFragmentManager,list)
-
+        SNSVP_mainContent.adapter = MainFragmentPagerAdapter(supportFragmentManager, list)
 
         //init first page by search information
         ll_MainPage.callOnClick()

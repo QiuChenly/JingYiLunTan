@@ -20,16 +20,14 @@ class SuperNoScrollViewPager : ViewPager {
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        return !canScroll && super.onInterceptTouchEvent(ev)
+        return canScroll && super.onInterceptTouchEvent(ev)
     }
 
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
-        return !canScroll && super.onTouchEvent(ev)
+        return canScroll && super.onTouchEvent(ev)
     }
 
     override fun setCurrentItem(item: Int) {
         super.setCurrentItem(item,false)//干掉滑动动画
     }
-
-
 }

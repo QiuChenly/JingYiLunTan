@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
     android:padding="8dp">
 
     <LinearLayout
@@ -12,19 +13,20 @@
         <FrameLayout
             android:layout_width="50dp"
             android:layout_height="match_parent">
+
             <ImageView
-                android:layout_gravity="center"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_gravity="center"
                 android:background="@drawable/ic_search_black_24dp"
                 android:scaleType="centerCrop" />
         </FrameLayout>
 
         <TextView
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:gravity="center|left"
-            android:text="安排一下"
-            android:layout_height="match_parent" />
+            android:text="安排一下" />
 
     </LinearLayout>
-</FrameLayout>
+</LinearLayout>

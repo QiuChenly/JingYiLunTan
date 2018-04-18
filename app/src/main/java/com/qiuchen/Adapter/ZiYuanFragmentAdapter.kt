@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentStatePagerAdapter
  */
 class ZiYuanFragmentAdapter(fm: FragmentManager,
                             val mZiYuanFragmentAdapter_Kind: ArrayList<ZiYuanFragmentAdapter_Kind>) : FragmentStatePagerAdapter(fm) {
+
     override fun getItem(position: Int): Fragment {
         return mZiYuanFragmentAdapter_Kind[position].fragment
     }

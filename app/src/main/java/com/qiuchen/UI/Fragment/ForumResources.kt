@@ -39,6 +39,6 @@ class ForumResources : BaseFragment<ForumResourcesView, ResourceModel, ForumReso
         myViewPager.offscreenPageLimit = 3
 
         tl_ziyuan.setupWithViewPager(myViewPager)
-        tl_ziyuan.setSelectedTabIndicatorColor(Color.WHITE)
+        tl_ziyuan.setSelectedTabIndicatorColor(Color.parseColor("#1b9d5e"))
     }
 }
