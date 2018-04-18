@@ -196,6 +196,28 @@ class mJingYi {
             }
         }
 
+        fun getMainPageData(GetData: GetData) {
+            var str = "https://bbs.125.la/"
+            val http = nHttp.Builder(str)
+                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .setRequestHeader("Cache-Control", "no-cache")
+                    .setRequestHeader("Connection", "keep-alive")
+                    .setRequestHeader("Host", "bbs.125.la")
+                    .setRequestHeader("Pragma", "no-cache")
+                    .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
+                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
+                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                    .setCookieStore(mSharedContext.getCookie())
+                    .Request()
+            str = http.toString()
+            GetData.getDataSuccess(str)
+        }
+
+        interface GetData {
+            fun getDataSuccess(str: String)
+        }
+
         class QRBack {
             /**
              * status : 1
@@ -208,6 +230,7 @@ class mJingYi {
         interface QRCallBack {
             fun getImgSuccess(status: Int, bit: Bitmap?)
         }
+
 
         /**
          * 正则表达式取中间文本
@@ -228,7 +251,6 @@ class mJingYi {
         fun taskGetFailed()
         fun taskOver()
     }
-
 }
 
 

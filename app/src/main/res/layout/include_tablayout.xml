@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tl_ziyuan"
     android:layout_width="match_parent"
-    android:layout_height="44dp"
+    android:layout_height="40dp"
     android:background="@color/backDefault"
     android:focusable="false"
     app:tabIndicatorHeight="2dp"

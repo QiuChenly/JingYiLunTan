@@ -13,15 +13,22 @@
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
-            app:contentInsetStart="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            app:contentInsetStart="0dp"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <include layout="@layout/include_toolbar" />
         </android.support.v7.widget.Toolbar>
 
 
-        <include layout="@layout/include_tablayout" />
+        <include
+            layout="@layout/include_tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
 
         <View
             android:layout_width="match_parent"
@@ -30,16 +37,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_searchContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="123123123123123213sdasdasd"
-            android:textSize="200dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-    </android.support.v4.widget.NestedScrollView>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </android.support.design.widget.CoordinatorLayout>
