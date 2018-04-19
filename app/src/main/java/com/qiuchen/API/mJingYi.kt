@@ -3,10 +3,12 @@ package com.qiuchen.API
 import android.graphics.Bitmap
 import android.os.Environment
 import com.google.gson.Gson
+import com.qiuchen.DataModel.mNewsModel
 import com.qiuchen.DataModel.mTask
 import com.qiuchen.DataModel.mTaskList
 import com.qiuchen.jingyi.nativeHttp.nHttp
 import com.qiuchen.mSharedContext
+import org.jsoup.Jsoup
 import java.io.File
 import java.io.FileOutputStream
 import java.util.regex.Pattern
@@ -196,6 +198,25 @@ class mJingYi {
             }
         }
 
+        fun signBbs(hash: String) {
+            val u = "https://bbs.125.la/plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=0"
+            val http = nHttp.Builder(u)
+                    .setPostData("formhash=$hash&qdxq=kx&todaysay=")
+                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
+                    .setRequestHeader("Cache-Control", "no-cache")
+                    .setRequestHeader("Connection", "keep-alive")
+                    .setRequestHeader("Host", "bbs.125.la")
+                    .setRequestHeader("Pragma", "no-cache")
+                    .setRequestHeader("Referer", "https://bbs.125.la/")
+                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
+                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                    .setAllowRedirect(true)
+                    .setCookieStore(mSharedContext.getCookie())
+                    .Request()
+            val str = http.toString()
+        }
+
         fun getMainPageData(GetData: GetData) {
             var str = "https://bbs.125.la/"
             val http = nHttp.Builder(str)
@@ -208,14 +229,52 @@ class mJingYi {
                     .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
                     .setRequestHeader("Upgrade-Insecure-Requests", "1")
                     .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
+                    .setAllowRedirect(true)
                     .setCookieStore(mSharedContext.getCookie())
                     .Request()
             str = http.toString()
-            GetData.getDataSuccess(str)
+            if (str.indexOf("value=\"我今天什么都不想说\">我今天什么都不想说") != -1) {
+                val left = str.indexOf("<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=", 0)
+                signBbs(str.substring(left, str.indexOf("\"", left + "<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=".length)))
+                return getMainPageData(GetData = GetData)
+            }
+            val document = Jsoup.parse(str)
+            val s = document.getElementById("show_1")
+            val a = s.getElementsByTag("li")
+//            https://bbs.125.la/plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=0
+            val mlist = ArrayList<mNewsModel>()
+            //枚举
+            for (d in 0 until a.size) {
+                println(d)
+                val category = a[d].getElementsByTag("font").text()
+                val b = a[d].getElementsByTag("span")
+                val c = b[0].getElementsByTag("a")
+                val href = c.attr("href")
+                val title = a[d].getElementsByTag("a")[1].getElementsByTag("a").attr("title")
+                val p = Pattern.compile("标题：(.*?)\\n楼主：(.*?)发表于：(.*?)\\n")
+                val m = p.matcher(title)
+                if (m.find()) {
+                    //标题
+                    val tit = m.group(1)
+                    //作者
+                    val master = m.group(2).replace("&nbsp", "").trim()
+                    //发布时间
+                    val postof = m.group(3)
+                    mlist.add(mNewsModel().apply {
+                        this.category = category
+                        this.postname = master
+                        this.sendof = postof
+                        this.title = tit
+                        this.url = href
+                    })
+                }
+            }
+            GetData.getDataSuccess(mlist)
         }
 
+        //str.substring(str.indexOf("<!--第1格：最新主题-->",0),str.indexOf("<!--第2格 最新担保-->"))
         interface GetData {
-            fun getDataSuccess(str: String)
+            fun getDataSuccess(str: ArrayList<mNewsModel>)
         }
 
         class QRBack {

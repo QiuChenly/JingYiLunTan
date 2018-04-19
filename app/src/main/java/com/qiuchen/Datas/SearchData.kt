@@ -8,4 +8,6 @@ class SearchData : BasePresenter<SearchViews, SearchModel>() {
     override fun createModel(): SearchModel? {
         return SearchModel()
     }
+
+
 }

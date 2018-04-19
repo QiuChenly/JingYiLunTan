@@ -11,6 +11,8 @@ import kotlinx.android.synthetic.main.fragment_search.*
 import kotlinx.android.synthetic.main.include_tablayout.*
 
 class SearchFragment : BaseFragment<SearchViews, SearchModel, SearchData>(), SearchViews {
+
+
     override fun getLayout(): Int {
         return R.layout.fragment_search
     }
@@ -28,6 +30,8 @@ class SearchFragment : BaseFragment<SearchViews, SearchModel, SearchData>(), Sea
 
         tl_ziyuan.setupWithViewPager(vp_searchContent)
         tl_ziyuan.setSelectedTabIndicatorColor(Color.parseColor("#1b9d5e"))
+
+        //getPres()?.getData()
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
