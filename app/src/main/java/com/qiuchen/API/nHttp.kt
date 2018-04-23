@@ -8,6 +8,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * Created by qiuchen on 2018/1/22.
@@ -166,7 +167,14 @@ open class nHttp(ret: nHttpRet) {
             if (nCook != null) {
                 nCook?.addAll(getCookies(urlConn))
             }
-            return nHttpRet(urlConn.responseCode, getBytes(urlConn.inputStream), urlConn.headerFields)
+            var code = 500
+            try {
+                code = urlConn.responseCode
+                return nHttpRet(code, getBytes(urlConn.inputStream), urlConn.headerFields)
+            } catch (e: Exception) {
+                code = 500
+                return nHttpRet(code, "".toByteArray(), HashMap())
+            }
         }
 
         //异步请求方法
@@ -225,7 +233,7 @@ open class nHttp(ret: nHttpRet) {
         fun onFailure(statusCode: Int, retData: String)
     }
 
-    class nHttpRet(var statusCode: Int = -1, var RetByteArray: ByteArray = kotlin.ByteArray(0), var retHeaders: Map<String, List<String>> = HashMap<String, List<String>>())
+    class nHttpRet(var statusCode: Int = -1, var RetByteArray: ByteArray = kotlin.ByteArray(0), var retHeaders: Map<String, List<String>> = HashMap())
 
     class CookieEx(var key: String = "", var value: String = "")
 

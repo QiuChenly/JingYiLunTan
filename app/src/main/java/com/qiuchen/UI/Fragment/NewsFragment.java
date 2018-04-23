@@ -35,12 +35,12 @@ public class NewsFragment extends BaseFragment<NewsView, NewsModel, NewsData> im
         rv_fragment_rv.setLayoutManager(new LinearLayoutManager(this.getContext()));
         rv_fragment_rv.setItemAnimator(new DefaultItemAnimator());
         rv_fragment_rv.setHasFixedSize(false);
-        //new RecycleViewDivider(getContext(), LinearLayoutManager.VERTICAL, 15, Color.parseColor("#51a1a1a1"))
         RecyclerView.ItemDecoration decoration = ItemDecorations.vertical(this.getContext())
                 .type(1, R.drawable.recyclerview_splitline)
                 .type(2, R.drawable.recyclerview_splitline)
                 .create();
         rv_fragment_rv.addItemDecoration(decoration);
+        decoration = null;
         mSwipeRefresh = (SwipeRefreshLayout) getView().findViewById(R.id.mSwipeRefresh);
         mSwipeRefresh.setOnRefreshListener(this);
 
@@ -52,6 +52,7 @@ public class NewsFragment extends BaseFragment<NewsView, NewsModel, NewsData> im
         ll2.add("http://www.liandu.gov.cn/zhxx/rdzt/ldxf/hdzl/cjqg/201610/W020161017574715226738.jpg");
         ll2.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1524125099962&di=c2ca6454dd50f6f9b3ee4f7f36f647e8&imgtype=0&src=http%3A%2F%2Fpic.qiantucdn.com%2F58pic%2F18%2F50%2F03%2F62R58PICig9_1024.jpg");
         ada = new NewsContentAdapter(new ArrayList<mNewsModel>(), ll2, this);
+        ll2 = null;
         rv_fragment_rv.setAdapter(ada);
         ada.startLoop();
         getPres().getData();
@@ -83,9 +84,17 @@ public class NewsFragment extends BaseFragment<NewsView, NewsModel, NewsData> im
         h.post(new Runnable() {
             @Override
             public void run() {
-                if (mSwipeRefresh.isRefreshing()) mSwipeRefresh.setRefreshing(false);
-                ada.setList(Str);
-                Toast.makeText(getContext(), "haha guer", Toast.LENGTH_SHORT).show();
+                if (mSwipeRefresh.isRefreshing()) {
+                    mSwipeRefresh.setRefreshing(false);
+                }
+                if (Str.size() > 0) {
+
+                    ada.setList(Str);
+                    ada.notifyDataSetChanged();
+                    Toast.makeText(getContext(), "已刷新数据", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "网络请求失败 ^_^", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

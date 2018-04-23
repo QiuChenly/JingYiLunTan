@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="bottom"
+    android:background="@android:color/transparent"
     android:orientation="vertical">
 
     <android.support.design.widget.CoordinatorLayout
@@ -10,44 +11,10 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="@color/backDefault">
-
-        <!-- <android.support.design.widget.AppBarLayout
-             android:layout_width="match_parent"
-             android:layout_height="70dp"
-             android:id="@+id/al_mainal"
-             android:background="#2196f3">
-
-             <android.support.v7.widget.Toolbar
-                 android:id="@+id/tb_Content"
-                 android:layout_width="match_parent"
-                 android:layout_height="match_parent"
-                 android:layout_marginTop="25dp"
-                 android:theme="@style/mToolBarControlColor"
-                 app:contentInsetStart="0dp"
-                 app:layout_scrollFlags="scroll|enterAlways">
-
-                 <TextView
-                     android:id="@+id/tv_title"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_gravity="center"
-                     android:singleLine="true"
-                     android:text="title"
-                     android:textAppearance="?android:attr/textAppearanceMediumInverse"
-                     android:textColor="#ffffff"
-                     android:textStyle="bold" />
-
-             </android.support.v7.widget.Toolbar>
-         </android.support.design.widget.AppBarLayout>
-    -->
-
-        <!--<include layout="@layout/include_toolbar" />-->
-
         <com.qiuchen.CustomViews.SuperNoScrollViewPager
             android:id="@+id/SNSVP_mainContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
 
     </android.support.design.widget.CoordinatorLayout>
 

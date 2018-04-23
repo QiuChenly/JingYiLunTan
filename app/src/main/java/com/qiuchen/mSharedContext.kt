@@ -8,6 +8,7 @@ import com.android.volley.toolbox.Volley.newRequestQueue
 import com.qiuchen.Utils.mDataBaseHelper
 import com.qiuchen.Utils.mUtils
 import com.qiuchen.jingyi.nativeHttp.nHttp
+import com.squareup.leakcanary.LeakCanary
 
 
 /**
@@ -42,6 +43,8 @@ class mSharedContext : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        if(LeakCanary.isInAnalyzerProcess(this)) return
+        LeakCanary.install(this)
         mUtils.mDataBaseHelper = mDataBaseHelper(this, MDATABASE_NAME, null, 1)
         CookieEx = nHttp.nCookie()
         mSP = PreferenceManager.getDefaultSharedPreferences(this)

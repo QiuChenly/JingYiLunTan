@@ -215,6 +215,7 @@ class mJingYi {
                     .setCookieStore(mSharedContext.getCookie())
                     .Request()
             val str = http.toString()
+            println(str)
         }
 
         fun getMainPageData(GetData: GetData) {
@@ -232,44 +233,146 @@ class mJingYi {
                     .setAllowRedirect(true)
                     .setCookieStore(mSharedContext.getCookie())
                     .Request()
+            if (http.getStatusCode() > 400) {
+                GetData.getDataSuccess(ArrayList())
+                return
+            }
             str = http.toString()
             if (str.indexOf("value=\"我今天什么都不想说\">我今天什么都不想说") != -1) {
                 val left = str.indexOf("<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=", 0)
                 signBbs(str.substring(left, str.indexOf("\"", left + "<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=".length)))
                 return getMainPageData(GetData = GetData)
             }
-            val document = Jsoup.parse(str)
-            val s = document.getElementById("show_1")
-            val a = s.getElementsByTag("li")
-//            https://bbs.125.la/plugin.php?id=dsu_paulsign:sign&operation=qiandao&infloat=0
-            val mlist = ArrayList<mNewsModel>()
-            //枚举
-            for (d in 0 until a.size) {
-                println(d)
-                val category = a[d].getElementsByTag("font").text()
-                val b = a[d].getElementsByTag("span")
-                val c = b[0].getElementsByTag("a")
-                val href = c.attr("href")
-                val title = a[d].getElementsByTag("a")[1].getElementsByTag("a").attr("title")
-                val p = Pattern.compile("标题：(.*?)\\n楼主：(.*?)发表于：(.*?)\\n")
-                val m = p.matcher(title)
-                if (m.find()) {
-                    //标题
-                    val tit = m.group(1)
-                    //作者
-                    val master = m.group(2).replace("&nbsp", "").trim()
-                    //发布时间
-                    val postof = m.group(3)
-                    mlist.add(mNewsModel().apply {
-                        this.category = category
-                        this.postname = master
-                        this.sendof = postof
-                        this.title = tit
-                        this.url = href
-                    })
-                }
+            if (str.indexOf("show_1") == -1) {
+                GetData.getDataSuccess(ArrayList())
+                return
             }
-            GetData.getDataSuccess(mlist)
+            val document = Jsoup.parse(str)
+
+            val mainList = ArrayList<ArrayList<mNewsModel>>()
+            var arr: ArrayList<mNewsModel>
+            for (i in 1..7) {
+                if (i == 4) continue
+                val shows = document.getElementById("show_$i").getElementsByTag("li")
+                arr = ArrayList()
+                for (d in 0 until shows.size) {
+                    when (i) {
+                        1, 5, 6, 7 -> {
+                            //最新帖
+                            //本周热帖
+                            //随机精华
+                            //招聘
+                            val category = shows[d].getElementsByTag("font").text()
+                            val b = shows[d].getElementsByTag("span")
+                            val c = b[0].getElementsByTag("a")
+                            val userhref = c.attr("href")
+                            val title = shows[d].getElementsByTag("a")[1].getElementsByTag("a").attr("title")
+                            val tidHref = shows[d].getElementsByTag("a")[1].getElementsByTag("a").attr("href")
+                            arr.add(mNewsModel().apply {
+                                this.category = category
+                                this.info = getInfos(title)
+                                this.userhref = userhref
+                                this.tidHref = tidHref
+                            })
+                        }
+                        2 -> {
+                            //最新定制
+                            val money = shows[d].getElementsByClass("sprice").text()
+                            val category = shows[d].getElementsByTag("font").text()
+                            val c = shows[d].getElementsByTag("a")
+                            val href = c.attr("href")
+                            val title = c.attr("title")
+                            val tidHref = shows[d].getElementsByTag("a")[0].getElementsByTag("a").attr("href")
+                            arr.add(mNewsModel().apply {
+                                this.category = category
+                                info = getInfos(title)
+                                this.userhref = href
+                                this.tidHref = tidHref
+                                this.money = money
+                            })
+                        }
+                        3 -> {
+                            //易语言TV
+                            val sendtime = shows[d].getElementsByTag("a")[0].text()
+                            val href = shows[d].getElementsByTag("a")[0].attr("href")
+                            val tit = shows[d].getElementsByTag("a")[1].attr("title")
+                            val title = shows[d].getElementsByTag("a")[1].text()
+                            val author = tit.substring(tit.indexOf("发布者：") + "发布者：".length, tit.indexOf(" ", tit.indexOf("发布者：") + "发布者：".length))
+                            arr.add(mNewsModel().apply {
+                                this.category = "易语言TV"
+                                info = mNewsModel.mInfo().apply {
+                                    this.title = title
+                                    this.sendof = sendtime
+                                    this.postname = author
+                                }
+                                //此处视频地址 自动对接YYYTV，故无用户信息
+                                this.tidHref = href
+                                this.userhref = href
+                            })
+                        }
+                    }
+                }
+                mainList.add(arr)
+            }
+            arr = ArrayList()
+            //后面用于方便排序显示，暂时不做。
+            arr.addAll(mainList[0])
+            arr.addAll(mainList[1])
+            arr.addAll(mainList[2])
+            arr.addAll(mainList[3])
+            arr.addAll(mainList[4])
+            arr.addAll(mainList[5])
+            GetData.getDataSuccess(arr)
+        }
+
+        fun getBBSPageInfo(url: String, get: BBSPageInfoGet) {
+            val http = nHttp.Builder(url).setCookieStore(mSharedContext.getCookie())
+                    .Request()
+            if (http.getStatusCode() > 400) {
+                get.getSuccess(-1)
+                return
+            }
+            val str = http.toString()
+
+
+            if (str.indexOf("请先登录后才能继续浏览") != -1) {
+                get.getSuccess(-2)
+                return
+            }
+
+            val doc = Jsoup.parse(str)
+
+
+
+            get.getSuccess(0)
+        }
+
+
+        interface BBSPageInfoGet {
+            /**
+             * 获取数据成功回调
+             * @param status 状态 0=正常 -1 = 失败  -2 = 无权限查看本帖
+             */
+            fun getSuccess(status: Int)
+        }
+
+        //最新主题解析
+        fun getInfos(str: String): mNewsModel.mInfo {
+            val p = Pattern.compile("标题：(.*?)\\n楼主：(.*?)发表于：(.*?)\\n")
+            val m = p.matcher(str)
+            if (m.find()) {
+                //标题
+                val tit = m.group(1)
+                //作者
+                val master = m.group(2).replace("&nbsp", "").trim()
+                //发布时间
+                val postof = m.group(3)
+                return mNewsModel.mInfo().apply {
+                    this.postname = master
+                    this.sendof = postof
+                    this.title = tit
+                }
+            } else return mNewsModel.mInfo()
         }
 
         //str.substring(str.indexOf("<!--第1格：最新主题-->",0),str.indexOf("<!--第2格 最新担保-->"))

@@ -20,45 +20,58 @@ import kotlinx.android.synthetic.main.layout_main.*
  * @since
  */
 class MainActivityEx : FragmentActivity(), View.OnClickListener {
-    override fun onClick(v: View?) {
-        ll_MainPage_icon.showGreen(true, 0)
-        ll_GuanShui_icon.showGreen(true, 1)
-        ll_JieCare_icon.showGreen(true, 2)
-        ll_user_icon.showGreen(true)
-
-        ll_MainPage_title.showGreen(true)
-        ll_GuanShui_title.showGreen(true)
-        ll_JieCare_title.showGreen(true)
-        ll_user_title.showGreen(true)
-
-        when (v?.id) {
-            ll_MainPage.id -> {
-                ll_MainPage_icon.showGreen(false, 0)
-                ll_MainPage_title.showGreen()
-                getNowPage(1)
+    override fun onClick(v: View) {
+        if (v.tag == lastSelect) return
+        when (lastSelect) {
+            0 -> {
+                ll_MainPage_icon.showGreen(true, 0)
+                ll_MainPage_title.showGreen(true)
             }
-            ll_GuanShui.id -> {
-                ll_GuanShui_icon.showGreen(false, 1)
-                ll_GuanShui_title.showGreen()
-                getNowPage(2)
+            1 -> {
+                ll_GuanShui_icon.showGreen(true, 1)
+                ll_GuanShui_title.showGreen(true)
             }
-
-            ll_JieCare.id -> {
-                ll_JieCare_icon.showGreen(false, 2)
-                ll_JieCare_title.showGreen()
-                getNowPage(3)
+            2 -> {
+                ll_JieCare_icon.showGreen(true, 2)
+                ll_JieCare_title.showGreen(true)
             }
+            3 -> {
+                ll_user_icon.showGreen(true)
+                ll_user_title.showGreen(true)
+            }
+            else -> {
 
-            ll_user.id -> {
-                ll_user_icon.showGreen(false)
-                ll_user_title.showGreen()
-                getNowPage(4)
             }
         }
+
+        when (v.tag) {
+            0 -> {
+                ll_MainPage_icon.showGreen(false, 0)
+                ll_MainPage_title.showGreen()
+            }
+            1 -> {
+                ll_GuanShui_icon.showGreen(false, 1)
+                ll_GuanShui_title.showGreen()
+            }
+
+            2 -> {
+                ll_JieCare_icon.showGreen(false, 2)
+                ll_JieCare_title.showGreen()
+            }
+
+            3 -> {
+                ll_user_icon.showGreen(false)
+                ll_user_title.showGreen()
+            }
+        }
+        getNowPage(v.tag as Int)
+        lastSelect = v.tag as Int
     }
 
+    private var lastSelect = -1
+
     private fun getNowPage(int: Int) {
-        SNSVP_mainContent.currentItem = int - 1
+        SNSVP_mainContent.currentItem = int
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,24 +82,25 @@ class MainActivityEx : FragmentActivity(), View.OnClickListener {
         /*window.decorView.apply {
             systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }*/
-
+        ll_MainPage.tag = 0
         ll_MainPage.setOnClickListener(this)
+        ll_GuanShui.tag = 1
         ll_GuanShui.setOnClickListener(this)
+        ll_JieCare.tag = 2
         ll_JieCare.setOnClickListener(this)
+        ll_user.tag = 3
         ll_user.setOnClickListener(this)
 
         //init all fragments
-        val list = arrayListOf<Fragment>(SearchFragment(),
-                ForumResources(),
-                ForumResources(),
-                ForumResources())
+        val list = arrayListOf(SearchFragment(),
+                Fragment(),
+                Fragment(),
+                Fragment())
 
         //init all fragment for master page
         // TODO : tomorrow fix some Bugs and add some new features in here. 18/4/18
-
-
         SNSVP_mainContent.adapter = MainFragmentPagerAdapter(supportFragmentManager, list)
-
+        SNSVP_mainContent.offscreenPageLimit = 4
         //init first page by search information
         ll_MainPage.callOnClick()
     }
