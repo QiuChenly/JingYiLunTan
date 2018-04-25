@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.qiuchen.API.mJingYi
 import com.qiuchen.Base.BaseVH
 import com.qiuchen.DataModel.mNewsModel
@@ -113,10 +114,14 @@ class NewsContentAdapter(var mlist: List<mNewsModel>, val show: List<String>, va
                     val url = i.tidHref!!
                     thread {
                         mJingYi.getBBSPageInfo(url, object : mJingYi.Companion.BBSPageInfoGet {
-                            override fun getSuccess(status: Int) {
+                            override fun getSuccess(status: Int, ret: mJingYi.Companion.userInfos) {
                                 val hand = Handler(Looper.getMainLooper())
                                 hand.post {
-
+                                    tv_viewed.text = ret.watch
+                                    tv_message.text = ret.repost
+                                    Glide.with(holder.itemView.context)
+                                            .load(ret.imgUrl)
+                                            .into(mUserPic)
                                 }
                             }
                         })

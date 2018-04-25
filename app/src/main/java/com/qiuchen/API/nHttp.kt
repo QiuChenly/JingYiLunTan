@@ -22,7 +22,7 @@ open class nHttp(ret: nHttpRet) {
      * 转换服务器返回的数据为字符串
      */
     override fun toString(): String {
-        return ret.RetByteArray.toString(Charset.forName("GBK"))
+        return String(ret.RetByteArray,Charset.forName("GBK"))
     }
 
     /**
@@ -173,7 +173,7 @@ open class nHttp(ret: nHttpRet) {
                 return nHttpRet(code, getBytes(urlConn.inputStream), urlConn.headerFields)
             } catch (e: Exception) {
                 code = 500
-                return nHttpRet(code, "".toByteArray(), HashMap())
+                return nHttpRet(code, "null".toByteArray(), HashMap())
             }
         }
 
@@ -204,7 +204,6 @@ open class nHttp(ret: nHttpRet) {
                     if (c.size == 2) {
                         val d = CookieEx(c[0], c[1])
                         mCK.add(d)
-                        println(c)
                     }
                 }
             }
@@ -221,7 +220,10 @@ open class nHttp(ret: nHttpRet) {
                 if (len != -1)
                     op.write(ba, 0, len)
             } while (len != -1)
-            return op.toByteArray()
+            input.close()
+            val s = op.toByteArray()
+            op.close()
+            return s
         }
     }
 

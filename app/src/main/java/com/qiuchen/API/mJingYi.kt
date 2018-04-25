@@ -2,6 +2,8 @@ package com.qiuchen.API
 
 import android.graphics.Bitmap
 import android.os.Environment
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
 import com.qiuchen.DataModel.mNewsModel
 import com.qiuchen.DataModel.mTask
@@ -326,26 +328,47 @@ class mJingYi {
         }
 
         fun getBBSPageInfo(url: String, get: BBSPageInfoGet) {
-            val http = nHttp.Builder(url).setCookieStore(mSharedContext.getCookie())
-                    .Request()
-            if (http.getStatusCode() > 400) {
-                get.getSuccess(-1)
-                return
+            val s = userInfos("0", "0", "https://bbs.125.la:443/uc_server/images/noavatar_middle.gif", "https://bbs.125.la:443/uc_server/images/noavatar_middle.gif")
+
+            val req = object : StringRequest(url, Response.Listener {
+                if (it.indexOf("请先登录后才能继续浏览") != -1) {
+                    get.getSuccess(-2, s)
+                } else {
+                    val str = it
+                    try {
+                        val doc = Jsoup.parse(str)
+                        with(doc.getElementById("postlist").getElementsByClass("hm ptn")[0].getElementsByClass("xi1")) {
+                            val watch = this[0].text()
+                            s.watch = watch
+                            val repost = this[1].text()
+                            s.repost = repost
+                        }
+                        val img = doc.getElementsByClass("avtm")[0].getElementsByTag("img").attr("src")
+                        s.imgUrl = img
+                        get.getSuccess(0, s)
+                    } catch (e: Exception) {
+                        println(e.message)
+                        get.getSuccess(-3, s)
+                    }
+                }
+            }, Response.ErrorListener {
+                get.getSuccess(-1, s)
+            }) {
+                override fun getHeaders(): MutableMap<String, String> {
+                    val s = HashMap<String,String>()
+                    s["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+                    s["Accept-Language"] = "zh-CN,zh;q=0.9,en;q=0.8"
+                    s["Cache-Control"] = "no-cache"
+                    s["Connection"] = "keep-alive"
+                    s["Host"] = "bbs.125.la"
+                    s["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+                    return s
+                }
             }
-            val str = http.toString()
-
-
-            if (str.indexOf("请先登录后才能继续浏览") != -1) {
-                get.getSuccess(-2)
-                return
-            }
-
-            val doc = Jsoup.parse(str)
-
-
-
-            get.getSuccess(0)
+            mSharedContext.getQueue().add(req)
         }
+
+        class userInfos(var watch: String, var repost: String, var imgUrl: String, var onerror: String)
 
 
         interface BBSPageInfoGet {
@@ -353,7 +376,7 @@ class mJingYi {
              * 获取数据成功回调
              * @param status 状态 0=正常 -1 = 失败  -2 = 无权限查看本帖
              */
-            fun getSuccess(status: Int)
+            fun getSuccess(status: Int, ret: userInfos)
         }
 
         //最新主题解析
