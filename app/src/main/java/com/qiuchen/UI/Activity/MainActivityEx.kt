@@ -11,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.qiuchen.Adapter.MainFragmentPagerAdapter
 import com.qiuchen.R
-import com.qiuchen.UI.Fragment.ForumResources
+import com.qiuchen.UI.Fragment.ForumByMe
 import com.qiuchen.UI.Fragment.SearchFragment
 import kotlinx.android.synthetic.main.layout_main.*
 
@@ -95,7 +95,7 @@ class MainActivityEx : FragmentActivity(), View.OnClickListener {
         val list = arrayListOf(SearchFragment(),
                 Fragment(),
                 Fragment(),
-                Fragment())
+                ForumByMe())
 
         //init all fragment for master page
         // TODO : tomorrow fix some Bugs and add some new features in here. 18/4/18
@@ -145,63 +145,4 @@ class MainActivityEx : FragmentActivity(), View.OnClickListener {
         } else
             Toast.makeText(this.context, "Android 5.0下不支持此特性！", Toast.LENGTH_SHORT).show()
     }
-//    override fun onCreated() {
-//        setSupportActionBar(tb_Content)
-//        supportActionBar?.apply {
-//            title = ""
-//            setHomeButtonEnabled(true)
-////            setDisplayHomeAsUpEnabled(true)  不是二级页面，取消显示
-//        }
-//        val toggle = ActionBarDrawerToggle(this, drawer_layout, tb_Content, R.string.navi_open, R.string.navi_close)
-//        drawer_layout.setDrawerListener(toggle)
-//        toggle.syncState()
-//
-//        //进场动画
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            window.enterTransition = Slide().setDuration(200)
-//            window.exitTransition = Slide().setDuration(200)
-//        }
-//
-//        //开启4.4特性
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
-//            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//
-//        //偷懒模式开启
-//        //坚决不做viewpager
-//        supportFragmentManager
-//                .beginTransaction()
-//                .replace(R.id.fl_menu, MenuFragment())
-//                .commit()
-//        tv_title.text = "精易助手"
-//    }
-//
-//    fun show() {
-//        val objectAnimator = ObjectAnimator.ofFloat(supportActionBar, "translationY", 0f)
-//        objectAnimator.duration = 200
-//        objectAnimator.interpolator = AccelerateInterpolator()
-//        objectAnimator.start()
-//    }
-//
-//    fun switchViews(position: Int, title: String) {
-//        tv_title.text = title
-//        supportFragmentManager.beginTransaction().replace(R.id.fl_mainContent,
-//                when (position) {
-//                    0 -> {
-//                        ForumResources()
-//                    }
-//                    1 -> {
-//                        ForumOrderFragment()
-//                    }
-//                    2 -> {
-//                        HappyFragment()
-//                    }
-//                    else -> {
-//                        android.support.v4.app.Fragment()
-//                    }
-//                })
-//                .addToBackStack(null)
-//                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-//                .commit()
-//        if (drawer_layout.isDrawerOpen(Gravity.START)) drawer_layout.closeDrawer(Gravity.START)
-//    }
 }

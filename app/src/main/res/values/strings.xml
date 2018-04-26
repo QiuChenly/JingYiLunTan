@@ -3,4 +3,5 @@
     <string name="app_name">精易助手</string>
     <string name="navi_open">打开</string>
     <string name="navi_close">关闭</string>
+    <string name="title_activity_scan">ScanActivity</string>
 </resources>

@@ -214,7 +214,7 @@ open class nHttp(ret: nHttpRet) {
         private fun getBytes(input: InputStream): ByteArray {
             val op = ByteArrayOutputStream()
             var len: Int
-            var ba = ByteArray(1024)
+            val ba = ByteArray(1024)
             do {
                 len = input.read(ba)
                 if (len != -1)

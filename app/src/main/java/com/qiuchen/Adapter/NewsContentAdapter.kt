@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Message
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -104,6 +105,16 @@ class NewsContentAdapter(var mlist: List<mNewsModel>, val show: List<String>, va
                     vp_searchShowsVP.adapter = view
                 }
                 SPECIAL_NORMAL -> {
+
+                    //set onclick
+                    fl_expand_more.setOnClickListener {
+                        val v = LayoutInflater.from(context).inflate(R.layout.dialog_contextmenu, null)
+                        val dialog = AlertDialog.Builder(context)
+                                .setView(v)
+                                .create()
+                        dialog.show()
+                    }
+
                     val i = mlist[position - 1]
                     tv_username.text = i.info.postname
                     //optimization shows
@@ -121,11 +132,13 @@ class NewsContentAdapter(var mlist: List<mNewsModel>, val show: List<String>, va
                                     tv_message.text = ret.repost
                                     Glide.with(holder.itemView.context)
                                             .load(ret.imgUrl)
+                                            .placeholder(R.mipmap.loading)
+                                            .error(R.mipmap.noavatar_middle)
                                             .into(mUserPic)
                                 }
                             }
                         })
-                    }.start()
+                    }
 
                     if (i.money != null && i.money!!.isNotEmpty()) {
                         tv_money.text = i.money

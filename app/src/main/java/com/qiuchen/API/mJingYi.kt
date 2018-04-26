@@ -2,8 +2,6 @@ package com.qiuchen.API
 
 import android.graphics.Bitmap
 import android.os.Environment
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
 import com.qiuchen.DataModel.mNewsModel
 import com.qiuchen.DataModel.mTask
@@ -165,39 +163,31 @@ class mJingYi {
         }
 
         fun getMainIndex() {
-            var str = "https://bbs.125.la/"
-            val http = nHttp.Builder(str)
-                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
-                    .setRequestHeader("Cache-Control", "no-cache")
-                    .setRequestHeader("Connection", "keep-alive")
-                    .setRequestHeader("Host", "bbs.125.la")
-                    .setRequestHeader("Pragma", "no-cache")
-                    .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
-                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
-                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
-                    .setCookieStore(mSharedContext.getCookie())
-                    .Request()
-            str = http.toString()
-            var p = Pattern.compile("<strong class=\"vwmy qq\"><a href=\"\\./home\\.php\\?mod=space&amp;uid=(.*?)\" target=\"_blank\" title=\"访问我的空间\">(.*?)</a></strong>")
-            var m = p.matcher(str)
-            if (m.find()) {
-                val nick = m.group(2)
-                val uid = m.group(1)
-                p = Pattern.compile("mod=space&amp;uid=260102\"><img src=\"(.*?)\" onerror")
-                m = p.matcher(str)
-                m.find()
-                var imageUrl = m.group(1)
-                if (imageUrl.isEmpty())
-                    imageUrl = DEFAULT_PIC
-                val bit = readImg(imageUrl.replace(":443", ""), 1)
-                mSharedContext.mLoginState.isLogin = true
-                mSharedContext.mLoginState.nickName = nick
-                mSharedContext.mLoginState.uid = uid
-                mSharedContext.mLoginState.pic = bit
-            } else {
-                mSharedContext.mLoginState.isLogin = false
-            }
+            val str = "https://bbs.125.la/"
+            HttpHelper().execute(HttpHelper.Builder(str).Build(object : HttpHelper.Callback {
+                override fun NetResult(isSuccess: Boolean, retData: String) {
+                    var p = Pattern.compile("<strong class=\"vwmy qq\"><a href=\"\\./home\\.php\\?mod=space&amp;uid=(.*?)\" target=\"_blank\" title=\"访问我的空间\">(.*?)</a></strong>")
+                    var m = p.matcher(retData)
+                    if (m.find()) {
+                        val nick = m.group(2)
+                        val uid = m.group(1)
+                        p = Pattern.compile("mod=space&amp;uid=260102\"><img src=\"(.*?)\" onerror")
+                        m = p.matcher(retData)
+                        m.find()
+                        var imageUrl = m.group(1)
+                        if (imageUrl.isEmpty())
+                            imageUrl = DEFAULT_PIC
+                        val bit = readImg(imageUrl.replace(":443", ""), 1)
+                        mSharedContext.mLoginState.isLogin = true
+                        mSharedContext.mLoginState.nickName = nick
+                        mSharedContext.mLoginState.uid = uid
+                        mSharedContext.mLoginState.pic = bit
+                    } else {
+                        mSharedContext.mLoginState.isLogin = false
+                    }
+                }
+            }))
+
         }
 
         fun signBbs(hash: String) {
@@ -221,155 +211,129 @@ class mJingYi {
         }
 
         fun getMainPageData(GetData: GetData) {
-            var str = "https://bbs.125.la/"
-            val http = nHttp.Builder(str)
-                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
-                    .setRequestHeader("Cache-Control", "no-cache")
-                    .setRequestHeader("Connection", "keep-alive")
-                    .setRequestHeader("Host", "bbs.125.la")
-                    .setRequestHeader("Pragma", "no-cache")
-                    .setRequestHeader("Referer", "https://bbs.125.la/plugin.php?id=we_weixin&mod=login")
-                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
-                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
-                    .setAllowRedirect(true)
-                    .setCookieStore(mSharedContext.getCookie())
-                    .Request()
-            if (http.getStatusCode() > 400) {
-                GetData.getDataSuccess(ArrayList())
-                return
-            }
-            str = http.toString()
-            if (str.indexOf("value=\"我今天什么都不想说\">我今天什么都不想说") != -1) {
-                val left = str.indexOf("<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=", 0)
-                signBbs(str.substring(left, str.indexOf("\"", left + "<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=".length)))
-                return getMainPageData(GetData = GetData)
-            }
-            if (str.indexOf("show_1") == -1) {
-                GetData.getDataSuccess(ArrayList())
-                return
-            }
-            val document = Jsoup.parse(str)
-
-            val mainList = ArrayList<ArrayList<mNewsModel>>()
-            var arr: ArrayList<mNewsModel>
-            for (i in 1..7) {
-                if (i == 4) continue
-                val shows = document.getElementById("show_$i").getElementsByTag("li")
-                arr = ArrayList()
-                for (d in 0 until shows.size) {
-                    when (i) {
-                        1, 5, 6, 7 -> {
-                            //最新帖
-                            //本周热帖
-                            //随机精华
-                            //招聘
-                            val category = shows[d].getElementsByTag("font").text()
-                            val b = shows[d].getElementsByTag("span")
-                            val c = b[0].getElementsByTag("a")
-                            val userhref = c.attr("href")
-                            val title = shows[d].getElementsByTag("a")[1].getElementsByTag("a").attr("title")
-                            val tidHref = shows[d].getElementsByTag("a")[1].getElementsByTag("a").attr("href")
-                            arr.add(mNewsModel().apply {
-                                this.category = category
-                                this.info = getInfos(title)
-                                this.userhref = userhref
-                                this.tidHref = tidHref
-                            })
-                        }
-                        2 -> {
-                            //最新定制
-                            val money = shows[d].getElementsByClass("sprice").text()
-                            val category = shows[d].getElementsByTag("font").text()
-                            val c = shows[d].getElementsByTag("a")
-                            val href = c.attr("href")
-                            val title = c.attr("title")
-                            val tidHref = shows[d].getElementsByTag("a")[0].getElementsByTag("a").attr("href")
-                            arr.add(mNewsModel().apply {
-                                this.category = category
-                                info = getInfos(title)
-                                this.userhref = href
-                                this.tidHref = tidHref
-                                this.money = money
-                            })
-                        }
-                        3 -> {
-                            //易语言TV
-                            val sendtime = shows[d].getElementsByTag("a")[0].text()
-                            val href = shows[d].getElementsByTag("a")[0].attr("href")
-                            val tit = shows[d].getElementsByTag("a")[1].attr("title")
-                            val title = shows[d].getElementsByTag("a")[1].text()
-                            val author = tit.substring(tit.indexOf("发布者：") + "发布者：".length, tit.indexOf(" ", tit.indexOf("发布者：") + "发布者：".length))
-                            arr.add(mNewsModel().apply {
-                                this.category = "易语言TV"
-                                info = mNewsModel.mInfo().apply {
-                                    this.title = title
-                                    this.sendof = sendtime
-                                    this.postname = author
-                                }
-                                //此处视频地址 自动对接YYYTV，故无用户信息
-                                this.tidHref = href
-                                this.userhref = href
-                            })
-                        }
+            val str = "https://bbs.125.la/"
+            HttpHelper().execute(HttpHelper.Builder(str).Build(object : HttpHelper.Callback {
+                override fun NetResult(isSuccess: Boolean, retData: String) {
+                    if (retData.indexOf("value=\"我今天什么都不想说\">我今天什么都不想说") != -1) {
+                        val left = retData.indexOf("<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=", 0)
+                        signBbs(retData.substring(left, retData.indexOf("\"", left + "<a href=\"./member.php?mod=logging&amp;action=logout&amp;formhash=".length)))
+                        return getMainPageData(GetData = GetData)
                     }
+                    if (retData.indexOf("show_1") == -1) {
+                        GetData.getDataSuccess(ArrayList())
+                        return
+                    }
+                    val document = Jsoup.parse(retData)
+                    val mainList = ArrayList<ArrayList<mNewsModel>>()
+                    var arr: ArrayList<mNewsModel>
+                    for (i in 1..7) {
+                        if (i == 4) continue
+                        val shows = document.getElementById("show_$i").getElementsByTag("li")
+                        arr = ArrayList()
+                        for (d in 0 until shows.size) {
+                            when (i) {
+                                1, 5, 6, 7 -> {
+                                    //最新帖
+                                    //本周热帖
+                                    //随机精华
+                                    //招聘
+                                    val category = shows[d].getElementsByTag("font").text()
+                                    val b = shows[d].getElementsByTag("span")
+                                    val c = b[0].getElementsByTag("a")
+                                    val userhref = c.attr("href")
+                                    val title = shows[d].getElementsByTag("a")[1].getElementsByTag("a").attr("title")
+                                    val tidHref = shows[d].getElementsByTag("a")[1].getElementsByTag("a").attr("href")
+                                    arr.add(mNewsModel().apply {
+                                        this.category = category
+                                        this.info = getInfos(title)
+                                        this.userhref = userhref
+                                        this.tidHref = tidHref
+                                    })
+                                }
+                                2 -> {
+                                    //最新定制
+                                    val money = shows[d].getElementsByClass("sprice").text()
+                                    val category = shows[d].getElementsByTag("font").text()
+                                    val c = shows[d].getElementsByTag("a")
+                                    val href = c.attr("href")
+                                    val title = c.attr("title")
+                                    val tidHref = shows[d].getElementsByTag("a")[0].getElementsByTag("a").attr("href")
+                                    arr.add(mNewsModel().apply {
+                                        this.category = category
+                                        info = getInfos(title)
+                                        this.userhref = href
+                                        this.tidHref = tidHref
+                                        this.money = money
+                                    })
+                                }
+                                3 -> {
+                                    //易语言TV
+                                    val sendtime = shows[d].getElementsByTag("a")[0].text()
+                                    val href = shows[d].getElementsByTag("a")[0].attr("href")
+                                    val tit = shows[d].getElementsByTag("a")[1].attr("title")
+                                    val title = shows[d].getElementsByTag("a")[1].text()
+                                    val author = tit.substring(tit.indexOf("发布者：") + "发布者：".length, tit.indexOf(" ", tit.indexOf("发布者：") + "发布者：".length))
+                                    arr.add(mNewsModel().apply {
+                                        this.category = "易语言TV"
+                                        info = mNewsModel.mInfo().apply {
+                                            this.title = title
+                                            this.sendof = sendtime
+                                            this.postname = author
+                                        }
+                                        //此处视频地址 自动对接YYYTV，故无用户信息
+                                        this.tidHref = href
+                                        this.userhref = href
+                                    })
+                                }
+                            }
+                        }
+                        mainList.add(arr)
+                    }
+                    arr = ArrayList()
+                    //后面用于方便排序显示，暂时不做。
+                    arr.addAll(mainList[0])
+                    arr.addAll(mainList[1])
+                    arr.addAll(mainList[2])
+                    arr.addAll(mainList[3])
+                    arr.addAll(mainList[4])
+                    arr.addAll(mainList[5])
+                    GetData.getDataSuccess(arr)
                 }
-                mainList.add(arr)
-            }
-            arr = ArrayList()
-            //后面用于方便排序显示，暂时不做。
-            arr.addAll(mainList[0])
-            arr.addAll(mainList[1])
-            arr.addAll(mainList[2])
-            arr.addAll(mainList[3])
-            arr.addAll(mainList[4])
-            arr.addAll(mainList[5])
-            GetData.getDataSuccess(arr)
+            }))
         }
 
         fun getBBSPageInfo(url: String, get: BBSPageInfoGet) {
             val s = userInfos("0", "0", "https://bbs.125.la:443/uc_server/images/noavatar_middle.gif", "https://bbs.125.la:443/uc_server/images/noavatar_middle.gif")
-
-            val req = object : StringRequest(url, Response.Listener {
-                if (it.indexOf("请先登录后才能继续浏览") != -1) {
-                    get.getSuccess(-2, s)
-                } else {
-                    val str = it
-                    try {
-                        val doc = Jsoup.parse(str)
-                        with(doc.getElementById("postlist").getElementsByClass("hm ptn")[0].getElementsByClass("xi1")) {
-                            val watch = this[0].text()
-                            s.watch = watch
-                            val repost = this[1].text()
-                            s.repost = repost
+            mSharedContext.getQueue().add(HttpHelper.Builder(url).Build(object : HttpHelper.Callback {
+                override fun NetResult(isSuccess: Boolean, retData: String) {
+                    if (!isSuccess) {
+                        get.getSuccess(-1, s)
+                        return
+                    }
+                    if (retData.indexOf("请先登录后才能继续浏览") != -1) {
+                        get.getSuccess(-2, s)
+                    } else {
+                        try {
+                            val doc = Jsoup.parse(retData)
+                            with(doc.getElementById("postlist").getElementsByClass("hm ptn")[0].getElementsByClass("xi1")) {
+                                val watch = this[0].text()
+                                s.watch = watch
+                                val repost = this[1].text()
+                                s.repost = repost
+                            }
+                            val img = doc.getElementsByClass("avtm")[0].getElementsByTag("img").attr("src")
+                            s.imgUrl = img
+                            get.getSuccess(0, s)
+                        } catch (e: Exception) {
+                            println(e.message)
+                            get.getSuccess(-3, s)
                         }
-                        val img = doc.getElementsByClass("avtm")[0].getElementsByTag("img").attr("src")
-                        s.imgUrl = img
-                        get.getSuccess(0, s)
-                    } catch (e: Exception) {
-                        println(e.message)
-                        get.getSuccess(-3, s)
                     }
                 }
-            }, Response.ErrorListener {
-                get.getSuccess(-1, s)
-            }) {
-                override fun getHeaders(): MutableMap<String, String> {
-                    val s = HashMap<String,String>()
-                    s["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
-                    s["Accept-Language"] = "zh-CN,zh;q=0.9,en;q=0.8"
-                    s["Cache-Control"] = "no-cache"
-                    s["Connection"] = "keep-alive"
-                    s["Host"] = "bbs.125.la"
-                    s["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
-                    return s
-                }
-            }
-            mSharedContext.getQueue().add(req)
+            }))
         }
 
         class userInfos(var watch: String, var repost: String, var imgUrl: String, var onerror: String)
-
 
         interface BBSPageInfoGet {
             /**

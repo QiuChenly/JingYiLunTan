@@ -51,7 +51,7 @@ class mSharedContext : Application() {
         mSP = this.getSharedPreferences("QiuChenSP", android.content.Context.MODE_PRIVATE)
         val ck = mSP.getString("Cookie", "")
         if (ck.isNotEmpty()) {
-            CookieEx.addAll(ck)
+            CookieEx.addAll(ck)//restore cookies session
         }
         mQueue = newRequestQueue(this)
     }
