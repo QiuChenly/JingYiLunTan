@@ -73,25 +73,16 @@ class mJingYi {
 
         //获取二维码
         fun initScanQR(cb: QRCallBack) {
-            val http = nHttp.Builder(QRLOGIN_INITURL)
-                    .setCookieStore(mSharedContext.getCookie())
-                    .setRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-                    .setRequestHeader("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
-                    .setRequestHeader("Cache-Control", "no-cache")
-                    .setRequestHeader("Connection", "keep-alive")
-                    .setRequestHeader("Host", "bbs.125.la")
-                    .setRequestHeader("Pragma", "no-cache")
-                    .setRequestHeader("Referer", "https://bbs.125.la/")
-                    .setRequestHeader("Upgrade-Insecure-Requests", "1")
-                    .setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36")
-                    .Request()
-            if (http.getStatusCode() != 200) {
-                cb.getImgSuccess(-1, null)
-                return
-            }
-            var Str = http.toString()
-            Str = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + getSubString(Str, "https://mp\\.weixin\\.qq\\.com/cgi-bin/showqrcode\\?ticket=(.*?)\" width=\"250\"")
-            cb.getImgSuccess(0, readImg(Str, 0))
+            val ret = HttpHelper.Builder(QRLOGIN_INITURL)
+                    .Build(object : HttpHelper.Callback {
+                        override fun NetResult(isSuccess: Boolean, retData: String) {
+                            if (isSuccess)
+                                cb.getImgSuccess(0, "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + getSubString(retData, "https://mp\\.weixin\\.qq\\.com/cgi-bin/showqrcode\\?ticket=(.*?)\" width=\"250\""))
+                            else
+                                cb.getImgSuccess(-1, "")
+                        }
+                    })
+            HttpHelper().execute(ret)
         }
 
         private fun readImg(str: String, mode: Int): Bitmap? {
@@ -187,7 +178,6 @@ class mJingYi {
                     }
                 }
             }))
-
         }
 
         fun signBbs(hash: String) {
@@ -377,7 +367,7 @@ class mJingYi {
         }
 
         interface QRCallBack {
-            fun getImgSuccess(status: Int, bit: Bitmap?)
+            fun getImgSuccess(status: Int, bit: String)
         }
 
 

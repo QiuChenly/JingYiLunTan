@@ -65,8 +65,8 @@ class NewsContentAdapter(var mlist: List<mNewsModel>, val show: List<String>, va
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): BaseVH {
-        return BaseVH(LayoutInflater.from(parent?.context).inflate(when (viewType) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseVH {
+        return BaseVH(LayoutInflater.from(parent.context).inflate(when (viewType) {
             SPECIAL_VIEWPAGERANDHEAD -> R.layout.item_special_viewpagerandhead
             else -> R.layout.item_special_normal
         }, parent, false))
@@ -132,7 +132,7 @@ class NewsContentAdapter(var mlist: List<mNewsModel>, val show: List<String>, va
                                     tv_message.text = ret.repost
                                     Glide.with(holder.itemView.context)
                                             .load(ret.imgUrl)
-                                            .placeholder(R.mipmap.loading)
+                                            //.placeholder(R.mipmap.loading)
                                             .error(R.mipmap.noavatar_middle)
                                             .into(mUserPic)
                                 }

@@ -9,6 +9,7 @@ import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.qiuchen.Base.BaseApp
 import com.qiuchen.Base.mLayoutSet
@@ -61,10 +62,10 @@ class WebView : BaseApp() {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
             val dialog = BottomSheetDialog(this)
             val view = LayoutInflater.from(this).inflate(R.layout.menu_task, null)
-            val mRefresh = view.findViewById(R.id.mRefresh)
-            val mCopyURL = view.findViewById(R.id.mCopyURL)
+            val mRefresh = view.findViewById<LinearLayout>(R.id.mRefresh)
+            val mCopyURL = view.findViewById<LinearLayout>(R.id.mCopyURL)
 
-            mCopyURL.setOnClickListener({ view: View ->
+            mCopyURL.setOnClickListener({ _: View ->
                 val cp = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                 cp.text = Url
                 dialog.dismiss()
